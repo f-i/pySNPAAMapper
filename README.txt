@@ -2,20 +2,21 @@
 ####################
 Authors: Bai, Y & J. Cavalcoli
 SNPAAMapper Version 2.0 (Copyright 2013)
+Python Translator: Chenjian Fu
 ####################
 
 Program descriptions:
-SNPAAMapper is a downstream variant annotation program that can effectively classify variants by region (e.g. exon, intron, etc), predict amino acid change type (e.g. synonymous, non-synonymous mutation, etc), and prioritize mutation effects (e.g. CDS versus 5’UTR, etc).  
+SNPAAMapper is a downstream variant annotation program that can effectively classify variants by region (e.g. exon, intron, etc), predict amino acid change type (e.g. synonymous, non-synonymous mutation, etc), and prioritize mutation effects (e.g. CDS versus 5’UTR, etc).
 
 Major features:
-a) The pipeline accepts the VCF input file in tab-delimited format and processes the vcf input file containing all cases (G5, lowFreq, and novel) 
-b) The variant mapping step has the option of letting users select whether they want to report the bp distance between each identified intron variant and its nearby exon  
+a) The pipeline accepts the VCF input file in tab-delimited format and processes the vcf input file containing all cases (G5, lowFreq, and novel)
+b) The variant mapping step has the option of letting users select whether they want to report the bp distance between each identified intron variant and its nearby exon
 c) The pipeline can deal with VCF files called by different SAMTools versions (0.1.18 and older ones) and also offers flexibility in dealing with vcf input files generated using SAMTools with two or three samples
 d) The spreadsheet result file contains full protein sequences for both ref and alt alleles, which makes it easier for downstream protein structure/function analysis tools to take
 
 
-Instructions: Please dump all files in the same directory on Unix or Mac machines. The user can simply type 
-./run_SNPAAMapper.sh config.txt 
+Instructions: Please dump all files in the same directory on Unix or Mac machines. The user can simply type
+./run_SNPAAMapper.sh config.txt
 or run the following steps in a sequential order (Note: the first two steps were compiled for human hg19 genome and output files were generated already):
 
 # Generate exon annotation file
