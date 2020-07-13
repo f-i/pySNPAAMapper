@@ -3,7 +3,7 @@
 # Algorithm for generating annotation information structure for each exon (perl script to parse exons from ChrAll_knownGene.txt file)
 # USAGE: perl Algorithm_generating_annotation_exon.perl ChrAll_knownGene.txt
 
-if (!defined @ARGV)
+if (! @ARGV)
 {
   die  "Correct Syntax is: Algorithm_generating_annotation_exon.perl <fileneame> \n\nPlease supply a file to parse.  The output file will be the input file name with \".exons\" appended\n\n";
 }
