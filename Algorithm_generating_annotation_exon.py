@@ -19,11 +19,28 @@ def argsCheck(numArgs):
 # Uses the function defined above to check if the number of arguments is correct
 argsCheck(2)
 
-inFile = sys.argv[1]  # Stores file one for input checking; note that sys.argv[0] is this script file name
-
-outFile = inFile + ".exons"
-
 #number of bases on exon boundary
 exonboundary_offset=1
 up_flank=2000
 down_flank=500
+
+
+inFile = sys.argv[1]  # Stores file one for input checking; note that sys.argv[0] is this script file name
+try:
+    with open(inFile,"r") as in_file:
+        exons=in_file.read()
+
+        in_file.close()  # safely closes file
+except IOError:  #handling Exceptions
+    print("Failed to open " + inFile)
+    exit(1)
+
+outFile = inFile + ".exons"
+try:
+    with open(outFile,"w") as out_file:
+        header="bin\tname\tchrom\ttxStart\ttxEnd\tcdsStart\tcdsEnd\tExonNumber\texStart\texEnd\tintronStart\tintronEnd\tUTR5Start\tUTR5End\tUTR3Start\tUTR3End\tupstreamStart\tupstreamEnd\tdownstreamStart\tdownstreamEnd\n"
+
+        out_file.close()
+except IOError:
+    print("Failed to create " + outFile)
+    exit(1)
