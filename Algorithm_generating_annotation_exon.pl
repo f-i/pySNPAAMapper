@@ -50,7 +50,7 @@ while(<INFILE>)  #use the Perl while loop to read a file line by line to the end
 
 
   $count=0;
-  while ($count < $exonCount)
+  while($count < $exonCount)
   {
     #if this is the first exon
     if($txStart == $exstarts[$count])
@@ -182,8 +182,6 @@ while(<INFILE>)  #use the Perl while loop to read a file line by line to the end
             $CDSEnd = $cdsEnd;
             $UTR5Start = $cdsEnd + 1;
           }
-          $UTR3Start = "NA";
-          $UTR3End = "NA";
           $UTR5End = $exends[$count];
           if($exends[$count] == $txEnd) #if this is the last exon
           {
@@ -195,8 +193,6 @@ while(<INFILE>)  #use the Perl while loop to read a file line by line to the end
             $upstreamStart = "NA";
             $upstreamEnd = "NA";
           }
-          $downstreamStart = "NA";
-          $downstreamEnd = "NA";
         }
         else#1.2
         {
@@ -204,13 +200,13 @@ while(<INFILE>)  #use the Perl while loop to read a file line by line to the end
           $CDSEnd = $exends[$count];
           $UTR5Start = "NA";
           $UTR5End = "NA";
-          $UTR3Start = "NA";
-          $UTR3End = "NA";
           $upstreamStart = "NA";
           $upstreamEnd = "NA";
-          $downstreamStart = "NA";
-          $downstreamEnd = "NA";
         }
+        $UTR3Start = "NA";
+        $UTR3End = "NA";
+        $downstreamStart = "NA";
+        $downstreamEnd = "NA";
       }
       else#2
       {
@@ -222,22 +218,11 @@ while(<INFILE>)  #use the Perl while loop to read a file line by line to the end
         {
           $CDSStart = "NA";
           $CDSEnd = "NA";
-          $UTR3Start = $exstarts[$count];
           $UTR3End = $exends[$count];
           $UTR5Start = "NA";
           $UTR5End = "NA";
           $upstreamStart = "NA";
           $upstreamEnd = "NA";
-          if($exstarts[$count] == $txStart)#if this is the first exon
-          {
-            $downstreamStart = $txStart - $down_flank;
-            $downstreamEnd = $txStart - 1;
-          }
-          else
-          {
-            $downstreamStart = "NA";
-            $downstreamEnd = "NA";
-          }
         }
         else#2.2
         {
@@ -266,18 +251,18 @@ while(<INFILE>)  #use the Perl while loop to read a file line by line to the end
             }
           }
           $CDSStart = $cdsStart;
-          $UTR3Start = $exstarts[$count];
           $UTR3End = $cdsStart - 1;
-          if($exstarts[$count] == $txStart) #if this is the first exon
-          {
-            $downstreamStart = $txStart - $down_flank;
-            $downstreamEnd = $txStart - 1;
-          }
-          else
-          {
-            $downstreamStart = "NA";
-            $downstreamEnd = "NA";
-          }
+        }
+        $UTR3Start = $exstarts[$count];
+        if($exstarts[$count] == $txStart) #if this is the first exon
+        {
+          $downstreamStart = $txStart - $down_flank;
+          $downstreamEnd = $txStart - 1;
+        }
+        else
+        {
+          $downstreamStart = "NA";
+          $downstreamEnd = "NA";
         }
       }
     }
