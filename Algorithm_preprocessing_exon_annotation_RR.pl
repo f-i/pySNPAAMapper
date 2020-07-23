@@ -51,6 +51,7 @@ open OUTFILEDOWNSTREAMLINK, ">$out_downstream_link";
 
 #start the program
 @chrArray=`cut -f3 $exonfile | uniq | head -n2`;
+open EXONFILE, "<$exonfile";
 foreach $chromosome (@chrArray)
 {
   chomp $chromosome;
@@ -67,7 +68,6 @@ foreach $chromosome (@chrArray)
     @tempArray_upstream=();
     @tempArray_downstream=();
     print "======================Loop chromosome $chromosome and Hash $exonfile start...\n";
-    open EXONFILE, "<$exonfile";
     while(<EXONFILE>)
     {
       my $cdsstart;
@@ -163,10 +163,10 @@ foreach $chromosome (@chrArray)
         }#firstif
       }
     }
-    close EXONFILE;
     print "======================Loop chromosome $chromosome and Hash $exonfile done!!\n";
   }#else
 } #for chromsome
+close EXONFILE;
 
 foreach $key (sort keys %AllChromStart_cds)
 {
@@ -279,6 +279,7 @@ open OUTFILEDOWNSTREAMGENE, ">$out_downstream_gene";
 my @array_cds_link;
 my $i_cds_link=0;
 open(EXONFILECDSLINK, "$exonfile.cds_link");
+open(EXONFILECDSLINKCOPY, "$exonfile.cds_link_copy");
 while(<EXONFILECDSLINK>)
 {
   if($array_cds_link[$i_cds_link] != 1)
@@ -288,7 +289,6 @@ while(<EXONFILECDSLINK>)
     my $chrstart_cds = $exonlinecds[0];
     my $maxStop_cds = $exonlinecds[1];
     my $maxGene_cds = $exonlinecds[2];
-    open(EXONFILECDSLINKCOPY, "$exonfile.cds_link_copy");
     my $j_cds_link=0;
     while(<EXONFILECDSLINKCOPY>)
     {
@@ -309,17 +309,18 @@ while(<EXONFILECDSLINK>)
       }
       $j_cds_link++;
     }
-    close(EXONFILECDSLINKCOPY);
     print OUTFILECDSLINKSHRINK $chrstart_cds, "\t", $maxStop_cds, "\n";
     print OUTFILECDSGENE $chrstart_cds, "\t", $maxGene_cds, "\n";
   }
   $i_cds_link++;
 }
 close EXONFILECDSLINK;
+close(EXONFILECDSLINKCOPY);
 
 my @array_intron_link;
 my $i_intron_link=0;
 open(EXONFILEINTRONLINK, "$exonfile.intron_link");
+open(EXONFILEINTRONLINKCOPY, "$exonfile.intron_link_copy");
 while(<EXONFILEINTRONLINK>)
 {
   if($array_intron_link[$i_intron_link] != 1)
@@ -329,7 +330,6 @@ while(<EXONFILEINTRONLINK>)
     my $chrstart_intron = $exonlineintron[0];
     my $maxStop_intron = $exonlineintron[1];
     my $maxGene_intron = $exonlineintron[2];
-    open(EXONFILEINTRONLINKCOPY, "$exonfile.intron_link_copy");
     my $j_intron_link=0;
     while(<EXONFILEINTRONLINKCOPY>)
     {
@@ -350,17 +350,18 @@ while(<EXONFILEINTRONLINK>)
       }
       $j_intron_link++;
     }
-    close(EXONFILEINTRONLINKCOPY);
     print OUTFILEINTRONLINKSHRINK $chrstart_intron, "\t", $maxStop_intron, "\n";
     print OUTFILEINTRONGENE $chrstart_intron, "\t", $maxGene_intron, "\n";
   }
   $i_intron_link++;
 }
 close EXONFILEINTRONLINK;
+close(EXONFILEINTRONLINKCOPY);
 
 my @array_utr5_link;
 my $i_utr5_link=0;
 open(EXONFILEUTR5LINK, "$exonfile.utr5_link");
+open(EXONFILEUTR5LINKCOPY, "$exonfile.utr5_link_copy");
 while(<EXONFILEUTR5LINK>)
 {
   if($array_utr5_link[$i_utr5_link] != 1)
@@ -370,7 +371,6 @@ while(<EXONFILEUTR5LINK>)
     my $chrstart_utr5 = $exonlineutr5[0];
     my $maxStop_utr5 = $exonlineutr5[1];
     my $maxGene_utr5 = $exonlineutr5[2];
-    open(EXONFILEUTR5LINKCOPY, "$exonfile.utr5_link_copy");
     my $j_utr5_link=0;
     while(<EXONFILEUTR5LINKCOPY>)
     {
@@ -391,17 +391,18 @@ while(<EXONFILEUTR5LINK>)
       }
       $j_utr5_link++;
     }
-    close(EXONFILEUTR5LINKCOPY);
     print OUTFILEUTR5LINKSHRINK $chrstart_utr5, "\t", $maxStop_utr5, "\n";
     print OUTFILEUTR5GENE $chrstart_utr5, "\t", $maxGene_utr5, "\n";
   }
   $i_utr5_link++;
 }
 close EXONFILEUTR5LINK;
+close(EXONFILEUTR5LINKCOPY);
 
 my @array_utr3_link;
 my $i_utr3_link=0;
 open(EXONFILEUTR3LINK, "$exonfile.utr3_link");
+open(EXONFILEUTR3LINKCOPY, "$exonfile.utr3_link_copy");
 while(<EXONFILEUTR3LINK>)
 {
   if($array_utr3_link[$i_utr3_link] != 1)
@@ -411,7 +412,6 @@ while(<EXONFILEUTR3LINK>)
     my $chrstart_utr3 = $exonlineutr3[0];
     my $maxStop_utr3 = $exonlineutr3[1];
     my $maxGene_utr3 = $exonlineutr3[2];
-    open(EXONFILEUTR3LINKCOPY, "$exonfile.utr3_link_copy");
     my $j_utr3_link=0;
     while(<EXONFILEUTR3LINKCOPY>)
     {
@@ -432,17 +432,18 @@ while(<EXONFILEUTR3LINK>)
       }
       $j_utr3_link++;
     }
-    close(EXONFILEUTR3LINKCOPY);
     print OUTFILEUTR3LINKSHRINK $chrstart_utr3, "\t", $maxStop_utr3, "\n";
     print OUTFILEUTR3GENE $chrstart_utr3, "\t", $maxGene_utr3, "\n";
   }
   $i_utr3_link++;
 }
 close EXONFILEUTR3LINK;
+close(EXONFILEUTR3LINKCOPY);
 
 my @array_upstream_link;
 my $i_upstream_link=0;
 open(EXONFILEUPSTREAMLINK, "$exonfile.upstream_link");
+open(EXONFILEUPSTREAMLINKCOPY, "$exonfile.upstream_link_copy");
 while(<EXONFILEUPSTREAMLINK>)
 {
   if($array_upstream_link[$i_upstream_link] != 1)
@@ -452,7 +453,6 @@ while(<EXONFILEUPSTREAMLINK>)
     my $chrstart_upstream = $exonlineupstream[0];
     my $maxStop_upstream = $exonlineupstream[1];
     my $maxGene_upstream = $exonlineupstream[2];
-    open(EXONFILEUPSTREAMLINKCOPY, "$exonfile.upstream_link_copy");
     my $j_upstream_link=0;
     while(<EXONFILEUPSTREAMLINKCOPY>)
     {
@@ -473,17 +473,18 @@ while(<EXONFILEUPSTREAMLINK>)
       }
       $j_upstream_link++;
     }
-    close(EXONFILEUPSTREAMLINKCOPY);
     print OUTFILEUPSTREAMLINKSHRINK $chrstart_upstream, "\t", $maxStop_upstream, "\n";
     print OUTFILEUPSTREAMGENE $chrstart_upstream, "\t", $maxGene_upstream, "\n";
   }
   $i_upstream_link++;
 }
 close EXONFILEUPSTREAMLINK;
+close(EXONFILEUPSTREAMLINKCOPY);
 
 my @array_downstream_link;
 my $i_downstream_link=0;
 open(EXONFILEDOWNSTREAMLINK, "$exonfile.downstream_link");
+open(EXONFILEDOWNSTREAMLINKCOPY, "$exonfile.downstream_link_copy");
 while(<EXONFILEDOWNSTREAMLINK>)
 {
   if($array_downstream_link[$i_downstream_link] != 1)
@@ -493,7 +494,6 @@ while(<EXONFILEDOWNSTREAMLINK>)
     my $chrstart_downstream = $exonlinedownstream[0];
     my $maxStop_downstream = $exonlinedownstream[1];
     my $maxGene_downstream = $exonlinedownstream[2];
-    open(EXONFILEDOWNSTREAMLINKCOPY, "$exonfile.downstream_link_copy");
     my $j_downstream_link=0;
     while(<EXONFILEDOWNSTREAMLINKCOPY>)
     {
@@ -514,13 +514,13 @@ while(<EXONFILEDOWNSTREAMLINK>)
       }
       $j_downstream_link++;
     }
-    close(EXONFILEDOWNSTREAMLINKCOPY);
     print OUTFILEDOWNSTREAMLINKSHRINK $chrstart_downstream, "\t", $maxStop_downstream, "\n";
     print OUTFILEDOWNSTREAMGENE $chrstart_downstream, "\t", $maxGene_downstream, "\n";
   }
   $i_downstream_link++;
 }
 close EXONFILEDOWNSTREAMLINK;
+close(EXONFILEDOWNSTREAMLINKCOPY);
 
 close(OUTFILECDSLINKSHRINK);
 close(OUTFILEINTRONLINKSHRINK);
