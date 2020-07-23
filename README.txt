@@ -59,6 +59,9 @@ end of the RNA molecule and downstream is toward the 3' end. When considering
 double-stranded DNA, upstream is toward the 5' end of the coding strand for the
 gene in question and downstream is toward the 3' end.
 
+A chromosome (Ran Se Ti) is a DNA molecule with part or all of the genetic
+material of an organism.
+
 UTR3Start UTR5Start
 UTR3End UTR5End
 downstreamStart upstreamStart
