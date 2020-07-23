@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 
 # Algorithm for generating annotation information structure for each exon (perl script to parse exons from ChrAll_knownGene.txt file)
 # USAGE: perl Algorithm_generating_annotation_exon.perl ChrAll_knownGene.txt
@@ -26,11 +26,10 @@ while(<INFILE>)  #use the Perl while loop to read a file line by line to the end
   chomp;  # avoid \n on last field
   if($_ =~ /^\#/)  #boolean condition; \# if u do want # character, you'll have to quote it with a backslash
   {
-    next;  #The next command starts the next iteration of the loop
-  }
+    next;
+  }  #The next command starts the next iteration of the loop
 
-  ($name, $chrom, $strand, $txStart, $txEnd, $cdsStart, $cdsEnd, $exonCount,
-   $exonStarts, $exonEnds, $proteinID, $alignID)=split(/\t/,$_,12);
+  ($name, $chrom, $strand, $txStart, $txEnd, $cdsStart, $cdsEnd, $exonCount, $exonStarts, $exonEnds, $proteinID, $alignID)=split(/\t/,$_,12);
 
   @exstarts=split(/,/,$exonStarts);
   @exends=split(/,/,$exonEnds);
@@ -67,8 +66,13 @@ while(<INFILE>)  #use the Perl while loop to read a file line by line to the end
       $ex_num = 1 + $count;
       if($exstarts[$count] > $cdsStart) #1
       {
+        $UTR5Start = "NA";
+        $UTR5End = "NA";
+        $upstreamStart = "NA";
+        $upstreamEnd = "NA";
         if($exends[$count] > $cdsEnd) #1.1
         {
+          $UTR3End = $exends[$count];
           if($exstarts[$count] > $cdsEnd) #1.1.1
           {
             $CDSStart = "NA";
@@ -81,7 +85,6 @@ while(<INFILE>)  #use the Perl while loop to read a file line by line to the end
             $CDSEnd = $cdsEnd;
             $UTR3Start = $cdsEnd + 1;
           }
-          $UTR3End = $exends[$count];
           if($exends[$count] == $txEnd) #if this is the last exon
           {
             $downstreamStart = $txEnd + 1;
@@ -102,13 +105,10 @@ while(<INFILE>)  #use the Perl while loop to read a file line by line to the end
           $downstreamStart = "NA";
           $downstreamEnd = "NA";
         }
-        $UTR5Start = "NA";
-        $UTR5End = "NA";
-        $upstreamStart = "NA";
-        $upstreamEnd = "NA";
       }
       else#2
       {
+        $UTR5Start = $exstarts[$count];
         if($exends[$count] < $cdsStart) #2.1
         {
           $CDSStart = "NA";
@@ -148,7 +148,6 @@ while(<INFILE>)  #use the Perl while loop to read a file line by line to the end
             }
           }
         }
-        $UTR5Start = $exstarts[$count];
         if($exstarts[$count] == $txStart) #if this is the first exon
         {
           $upstreamStart = - $up_flank + $txStart;
@@ -166,8 +165,13 @@ while(<INFILE>)  #use the Perl while loop to read a file line by line to the end
       $ex_num = $exonCount - $count;
       if($exstarts[$count] > $cdsStart) #1
       {
+        $UTR3Start = "NA";
+        $UTR3End = "NA";
+        $downstreamStart = "NA";
+        $downstreamEnd = "NA";
         if($exends[$count] > $cdsEnd) #1.1
         {
+          $UTR5End = $exends[$count];
           if($exstarts[$count] > $cdsEnd) #1.1.1
           {
             $CDSStart = "NA";
@@ -180,7 +184,6 @@ while(<INFILE>)  #use the Perl while loop to read a file line by line to the end
             $CDSEnd = $cdsEnd;
             $UTR5Start = $cdsEnd + 1;
           }
-          $UTR5End = $exends[$count];
           if($exends[$count] == $txEnd) #if this is the last exon
           {
             $upstreamStart = $txEnd + 1;
@@ -201,10 +204,6 @@ while(<INFILE>)  #use the Perl while loop to read a file line by line to the end
           $upstreamStart = "NA";
           $upstreamEnd = "NA";
         }
-        $UTR3Start = "NA";
-        $UTR3End = "NA";
-        $downstreamStart = "NA";
-        $downstreamEnd = "NA";
       }
       else#2
       {
@@ -212,6 +211,7 @@ while(<INFILE>)  #use the Perl while loop to read a file line by line to the end
 #{
 #  print $exstarts[$count], "\t", $txStart, "\n";
 #}
+        $UTR3Start = $exstarts[$count];
         if($exends[$count] < $cdsStart) #2.1
         {
           $CDSStart = "NA";
@@ -251,7 +251,6 @@ while(<INFILE>)  #use the Perl while loop to read a file line by line to the end
             }
           }
         }
-        $UTR3Start = $exstarts[$count];
         if($exstarts[$count] == $txStart) #if this is the first exon
         {
           $downstreamStart = - $down_flank + $txStart;

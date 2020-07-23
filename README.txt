@@ -54,7 +54,13 @@ found on the 5' side, it is called the 5' UTR (or leader sequence), or if it is
 found on the 3' side, it is called the 3' UTR (or trailer sequence).
 
 By convention, upstream and downstream relate to the 5' to 3' direction
-respectively in which RNA transcription takes place.[1] Upstream is toward the
-5' end of the RNA molecule and downstream is toward the 3' end. When considering
+respectively in which RNA transcription takes place. Upstream is toward the 5'
+end of the RNA molecule and downstream is toward the 3' end. When considering
 double-stranded DNA, upstream is toward the 5' end of the coding strand for the
 gene in question and downstream is toward the 3' end.
+
+UTR3Start UTR5Start
+UTR3End UTR5End
+downstreamStart upstreamStart
+downstreamEnd upstreamEnd
+down_flank up_flank
