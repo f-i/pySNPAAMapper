@@ -2,7 +2,7 @@
 
 #Algorithm for preprocessing the gene structure to build annotation structure for each exon
 
-#USAGE: perl Algorithm_preprocessing_exon_annotation_regulatoryRegion.pl ChrAll_knownGene.txt.exon
+#USAGE: perl Algorithm_preprocessing_exon_annotation_regulatoryRegion.pl ChrAll_knownGene.txt.exons
 
 use POSIX;
 
@@ -53,7 +53,8 @@ open OUTFILEDOWNSTREAMLINK, ">$out_downstream_link";
 #start the program
 
 @chrArray=`cut -f3 $exonfile | uniq`;
-foreach $chromosome (@chrArray) {
+foreach $chromosome (@chrArray)
+{
   chomp $chromosome;
   if(($chromosome =~ /\_/) || ($chromosome =~ 'chrom'))
   {
@@ -73,18 +74,18 @@ foreach $chromosome (@chrArray) {
     open EXONFILE, "<$exonfile";
     while(<EXONFILE>)
     {
-       my $cdsstart;
-       my $cdsend;
-       my $intronstart;
-       my $intronend;
-       my $utr5start;
-       my $utr5end;
-       my $utr3start;
-       my $utr3end;
-       my $upstreamstart;
-       my $upstreamend;
-       my $downstreamstart;
-       my $downstreamend;
+      my $cdsstart;
+      my $cdsend;
+      my $intronstart;
+      my $intronend;
+      my $utr5start;
+      my $utr5end;
+      my $utr3start;
+      my $utr3end;
+      my $upstreamstart;
+      my $upstreamend;
+      my $downstreamstart;
+      my $downstreamend;
       chomp;
       if($_ =~ /bin/)
       {
@@ -154,7 +155,7 @@ foreach $chromosome (@chrArray) {
             $chr_upstream{"$chr"._."$upstreamstart"}=$upstreamend;
             $gene_upstream{"$chr"._."$upstreamstart"}=$exon_gene;
             print OUTFILEUPSTREAMLINK "$chr"._."$upstreamstart", "\t", $chr_upstream{"$chr"._."$upstreamstart"}, "\t";
-            print OUTFILEUPSTREAMLINK $gene_upstream{"$chr"._."$upstreamstart"}, "\n";	
+            print OUTFILEUPSTREAMLINK $gene_upstream{"$chr"._."$upstreamstart"}, "\n";
           }
           if($downstreamstart ne "NA" || $downstreamend ne "NA")
           {
@@ -163,7 +164,7 @@ foreach $chromosome (@chrArray) {
             $chr_downstream{"$chr"._."$downstreamstart"}=$downstreamend;
             $gene_downstream{"$chr"._."$downstreamstart"}=$exon_gene;
             print OUTFILEDOWNSTREAMLINK "$chr"._."$downstreamstart", "\t", $chr_downstream{"$chr"._."$downstreamstart"}, "\t";
-            print OUTFILEDOWNSTREAMLINK $gene_downstream{"$chr"._."$downstreamstart"}, "\n";	
+            print OUTFILEDOWNSTREAMLINK $gene_downstream{"$chr"._."$downstreamstart"}, "\n";
           }
         }#firstif
       }
@@ -178,7 +179,7 @@ foreach $key (sort keys %AllChromStart_cds)
 {
   @sortchromArray_cds = sort {$a<=>$b} @{$AllChromStart_cds{$key}};
   print OUTFILECDS $key, "\t";
-  for ($i=0; $i<($#sortchromArray_cds + 1); $i++)
+  for($i=0; $i<($#sortchromArray_cds + 1); $i++)
   {
     print OUTFILECDS $sortchromArray_cds[$i], "\t";
   }
@@ -188,7 +189,7 @@ foreach $key (sort keys %AllChromStart_intron)
 {
   @sortchromArray_intron = sort {$a<=>$b} @{$AllChromStart_intron{$key}};
   print OUTFILEINTRON $key, "\t";
-  for ($i=0; $i<($#sortchromArray_intron + 1); $i++)
+  for($i=0; $i<($#sortchromArray_intron + 1); $i++)
   {
     print OUTFILEINTRON $sortchromArray_intron[$i], "\t";
   }
@@ -198,7 +199,7 @@ foreach $key (sort keys %AllChromStart_utr5)
 {
   @sortchromArray_utr5 = sort {$a<=>$b} @{$AllChromStart_utr5{$key}};
   print OUTFILEUTR5 $key, "\t";
-  for ($i=0; $i<($#sortchromArray_utr5 + 1); $i++)
+  for($i=0; $i<($#sortchromArray_utr5 + 1); $i++)
   {
     print OUTFILEUTR5 $sortchromArray_utr5[$i], "\t";
   }
@@ -208,7 +209,7 @@ foreach $key (sort keys %AllChromStart_utr3)
 {
   @sortchromArray_utr3 = sort {$a<=>$b} @{$AllChromStart_utr3{$key}};
   print OUTFILEUTR3 $key, "\t";
-  for ($i=0; $i<($#sortchromArray_utr3 + 1); $i++)
+  for($i=0; $i<($#sortchromArray_utr3 + 1); $i++)
   {
     print OUTFILEUTR3 $sortchromArray_utr3[$i], "\t";
   }
@@ -218,7 +219,7 @@ foreach $key (sort keys %AllChromStart_upstream)
 {
   @sortchromArray_upstream = sort {$a<=>$b} @{$AllChromStart_upstream{$key}};
   print OUTFILEUPSTREAM $key, "\t";
-  for ($i=0; $i<($#sortchromArray_upstream + 1); $i++)
+  for($i=0; $i<($#sortchromArray_upstream + 1); $i++)
   {
     print OUTFILEUPSTREAM $sortchromArray_upstream[$i], "\t";
   }
@@ -228,7 +229,7 @@ foreach $key (sort keys %AllChromStart_downstream)
 {
   @sortchromArray_downstream = sort {$a<=>$b} @{$AllChromStart_downstream{$key}};
   print OUTFILEDOWNSTREAM $key, "\t";
-  for ($i=0; $i<($#sortchromArray_downstream + 1); $i++)
+  for($i=0; $i<($#sortchromArray_downstream + 1); $i++)
   {
     print OUTFILEDOWNSTREAM $sortchromArray_downstream[$i], "\t";
   }
@@ -247,12 +248,12 @@ close(OUTFILEUTR3LINK);
 close(OUTFILEUPSTREAMLINK);
 close(OUTFILEDOWNSTREAMLINK);
 
-`cp "$exonfile.cds_link"  "$exonfile.cds_link_copy"`;
-`cp "$exonfile.intron_link"  "$exonfile.intron_link_copy"`;
-`cp "$exonfile.utr5_link"  "$exonfile.utr5_link_copy"`;
-`cp "$exonfile.utr3_link"  "$exonfile.utr3_link_copy"`;
-`cp "$exonfile.upstream_link"  "$exonfile.upstream_link_copy"`;
-`cp "$exonfile.downstream_link"  "$exonfile.downstream_link_copy"`;
+`cp "$exonfile.cds_link" "$exonfile.cds_link_copy"`;
+`cp "$exonfile.intron_link" "$exonfile.intron_link_copy"`;
+`cp "$exonfile.utr5_link" "$exonfile.utr5_link_copy"`;
+`cp "$exonfile.utr3_link" "$exonfile.utr3_link_copy"`;
+`cp "$exonfile.upstream_link" "$exonfile.upstream_link_copy"`;
+`cp "$exonfile.downstream_link" "$exonfile.downstream_link_copy"`;
 
 my $out_cds_link_shrink="$exonfile".".cds_link_shrink";
 my $out_intron_link_shrink="$exonfile".".intron_link_shrink";
@@ -290,36 +291,36 @@ while(<EXONFILECDSLINK>)
 {
   if($array_cds_link[$i_cds_link] != 1)
   {
-  chomp;
-  @exonlinecds=split(/\t/,$_);
-  my $chrstart_cds = $exonlinecds[0];
-  my $maxStop_cds = $exonlinecds[1];
-  my $maxGene_cds = $exonlinecds[2];
-
-  open(EXONFILECDSLINKCOPY, "$exonfile.cds_link_copy");
-  my $j_cds_link=0;
-  while(<EXONFILECDSLINKCOPY>)
-  {
     chomp;
-    @exonlinecdslink=split(/\t/,$_);
-    if(($chrstart_cds eq $exonlinecdslink[0]) && ($exonlinecdslink[1] > $maxStop_cds))
+    @exonlinecds=split(/\t/,$_);
+    my $chrstart_cds = $exonlinecds[0];
+    my $maxStop_cds = $exonlinecds[1];
+    my $maxGene_cds = $exonlinecds[2];
+
+    open(EXONFILECDSLINKCOPY, "$exonfile.cds_link_copy");
+    my $j_cds_link=0;
+    while(<EXONFILECDSLINKCOPY>)
     {
-      $maxStop_cds = $exonlinecdslink[1];
-      $maxGene_cds = $exonlinecdslink[2];
-      $array_cds_link[$j_cds_link] = 1;
-    }
-    else
-    {
-      if($chrstart_cds eq $exonlinecdslink[0])
+      chomp;
+      @exonlinecdslink=split(/\t/,$_);
+      if(($chrstart_cds eq $exonlinecdslink[0]) && ($exonlinecdslink[1] > $maxStop_cds))
       {
+        $maxStop_cds = $exonlinecdslink[1];
+        $maxGene_cds = $exonlinecdslink[2];
         $array_cds_link[$j_cds_link] = 1;
       }
+      else
+      {
+        if($chrstart_cds eq $exonlinecdslink[0])
+        {
+          $array_cds_link[$j_cds_link] = 1;
+        }
+      }
+      $j_cds_link++;
     }
-    $j_cds_link++;
-  }
-  close(EXONFILECDSLINKCOPY);
-  print OUTFILECDSLINKSHRINK $chrstart_cds, "\t",  $maxStop_cds, "\n";
-  print OUTFILECDSGENE $chrstart_cds, "\t",  $maxGene_cds, "\n";
+    close(EXONFILECDSLINKCOPY);
+    print OUTFILECDSLINKSHRINK $chrstart_cds, "\t",  $maxStop_cds, "\n";
+    print OUTFILECDSGENE $chrstart_cds, "\t",  $maxGene_cds, "\n";
   }
   $i_cds_link++;
 }
@@ -333,36 +334,36 @@ while(<EXONFILEINTRONLINK>)
 {
   if($array_intron_link[$i_intron_link] != 1)
   {
-  chomp;
-  @exonlineintron=split(/\t/,$_);
-  my $chrstart_intron = $exonlineintron[0];
-  my $maxStop_intron = $exonlineintron[1];
-  my $maxGene_intron = $exonlineintron[2];
-
-  open(EXONFILEINTRONLINKCOPY, "$exonfile.intron_link_copy");
-  my $j_intron_link=0;
-  while(<EXONFILEINTRONLINKCOPY>)
-  {
     chomp;
-    @exonlineintronlink=split(/\t/,$_);
-    if(($chrstart_intron eq $exonlineintronlink[0]) && ($exonlineintronlink[1] > $maxStop_intron))
+    @exonlineintron=split(/\t/,$_);
+    my $chrstart_intron = $exonlineintron[0];
+    my $maxStop_intron = $exonlineintron[1];
+    my $maxGene_intron = $exonlineintron[2];
+
+    open(EXONFILEINTRONLINKCOPY, "$exonfile.intron_link_copy");
+    my $j_intron_link=0;
+    while(<EXONFILEINTRONLINKCOPY>)
     {
-      $maxStop_intron = $exonlineintronlink[1];
-      $maxGene_intron = $exonlineintronlink[2];
-      $array_intron_link[$j_intron_link] = 1;
-    }
-    else
-    {
-      if($chrstart_intron eq $exonlineintronlink[0])
+      chomp;
+      @exonlineintronlink=split(/\t/,$_);
+      if(($chrstart_intron eq $exonlineintronlink[0]) && ($exonlineintronlink[1] > $maxStop_intron))
       {
+        $maxStop_intron = $exonlineintronlink[1];
+        $maxGene_intron = $exonlineintronlink[2];
         $array_intron_link[$j_intron_link] = 1;
       }
+      else
+      {
+        if($chrstart_intron eq $exonlineintronlink[0])
+        {
+          $array_intron_link[$j_intron_link] = 1;
+        }
+      }
+      $j_intron_link++;
     }
-    $j_intron_link++;
-  }
-  close(EXONFILEINTRONLINKCOPY);
-  print OUTFILEINTRONLINKSHRINK $chrstart_intron, "\t",  $maxStop_intron, "\n";
-  print OUTFILEINTRONGENE $chrstart_intron, "\t",  $maxGene_intron, "\n";
+    close(EXONFILEINTRONLINKCOPY);
+    print OUTFILEINTRONLINKSHRINK $chrstart_intron, "\t",  $maxStop_intron, "\n";
+    print OUTFILEINTRONGENE $chrstart_intron, "\t",  $maxGene_intron, "\n";
   }
   $i_intron_link++;
 }
@@ -375,36 +376,36 @@ while(<EXONFILEUTR5LINK>)
 {
   if($array_utr5_link[$i_utr5_link] != 1)
   {
-  chomp;
-  @exonlineutr5=split(/\t/,$_);
-  my $chrstart_utr5 = $exonlineutr5[0];
-  my $maxStop_utr5 = $exonlineutr5[1];
-  my $maxGene_utr5 = $exonlineutr5[2];
-
-  open(EXONFILEUTR5LINKCOPY, "$exonfile.utr5_link_copy");
-  my $j_utr5_link=0;
-  while(<EXONFILEUTR5LINKCOPY>)
-  {
     chomp;
-    @exonlineutr5link=split(/\t/,$_);
-    if(($chrstart_utr5 eq $exonlineutr5link[0]) && ($exonlineutr5link[1] > $maxStop_utr5))
+    @exonlineutr5=split(/\t/,$_);
+    my $chrstart_utr5 = $exonlineutr5[0];
+    my $maxStop_utr5 = $exonlineutr5[1];
+    my $maxGene_utr5 = $exonlineutr5[2];
+
+    open(EXONFILEUTR5LINKCOPY, "$exonfile.utr5_link_copy");
+    my $j_utr5_link=0;
+    while(<EXONFILEUTR5LINKCOPY>)
     {
-      $maxStop_utr5 = $exonlineutr5link[1];
-      $maxGene_utr5 = $exonlineutr5link[2];
-      $array_utr5_link[$j_utr5_link] = 1;
-    }
-    else
-    {
-      if($chrstart_utr5 eq $exonlineutr5link[0])
+      chomp;
+      @exonlineutr5link=split(/\t/,$_);
+      if(($chrstart_utr5 eq $exonlineutr5link[0]) && ($exonlineutr5link[1] > $maxStop_utr5))
       {
+        $maxStop_utr5 = $exonlineutr5link[1];
+        $maxGene_utr5 = $exonlineutr5link[2];
         $array_utr5_link[$j_utr5_link] = 1;
       }
+      else
+      {
+        if($chrstart_utr5 eq $exonlineutr5link[0])
+        {
+          $array_utr5_link[$j_utr5_link] = 1;
+        }
+      }
+      $j_utr5_link++;
     }
-    $j_utr5_link++;
-  }
-  close(EXONFILEUTR5LINKCOPY);
-  print OUTFILEUTR5LINKSHRINK $chrstart_utr5, "\t",  $maxStop_utr5, "\n";
-  print OUTFILEUTR5GENE $chrstart_utr5, "\t",  $maxGene_utr5, "\n";
+    close(EXONFILEUTR5LINKCOPY);
+    print OUTFILEUTR5LINKSHRINK $chrstart_utr5, "\t",  $maxStop_utr5, "\n";
+    print OUTFILEUTR5GENE $chrstart_utr5, "\t",  $maxGene_utr5, "\n";
   }
   $i_utr5_link++;
 }
