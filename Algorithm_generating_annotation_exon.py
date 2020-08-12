@@ -7,7 +7,7 @@ USAGE:
     python Algorithm_generating_annotation_exon.py ChrAll_knownGene.txt
 '''
 
-import sys
+import sys, os
 import pandas as pd, numpy as np
 
 def argsCheck(numArgs):
@@ -26,8 +26,13 @@ up_flank=2000
 down_flank=500
 
 inFile = sys.argv[1]  # Stores file one for input checking; note that sys.argv[0] is this script file name
+inFilet=os.path.splitext(inFile)[1]
 try:
-    a = pd.read_csv(inFile, delimiter="\t")
+    print("Reading your data file "+inFile+" ...")
+    if inFilet=='.xls' or inFilet=='.xlsx':
+        a = pd.read_excel(inFile)
+    else:
+        a = pd.read_csv(inFile, delimiter="\t")
 except IOError:  #handling Exceptions
     print("Failed to open " + inFile)
     exit(1)
@@ -146,6 +151,7 @@ c=c.astype({'cdsStart': 'Int32','cdsEnd': 'Int32','intronStart': 'Int32',
 
 outFile = inFile + ".exons"
 try:
+    print("Saving data to file "+outFile+" ...")
     c.to_csv(outFile,index=False,sep='\t',na_rep='NA')
 except IOError:
     print("Failed to create " + outFile)
