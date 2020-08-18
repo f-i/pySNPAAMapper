@@ -63,6 +63,10 @@ sub func0 {
   }
 }
 
+open EXONFILE, '<', $exonfile;
+chomp(my @lines = <EXONFILE>);
+close EXONFILE;
+
 @chrArray=`cut -f3 $exonfile | uniq`;
 foreach $chromosome (@chrArray)
 {
@@ -80,8 +84,7 @@ foreach $chromosome (@chrArray)
     @tempArray_upstream=();
     @tempArray_downstream=();
     print "======================Loop chromosome $chromosome and Hash $exonfile start...\n";
-    open EXONFILE, "<$exonfile";
-    while(<EXONFILE>)
+    foreach (@lines)
     {
       chomp;
       if($_ =~ /bin/)
@@ -102,7 +105,6 @@ foreach $chromosome (@chrArray)
         }#firstif
       }
     }
-    close EXONFILE;
     print "======================Loop chromosome $chromosome and Hash $exonfile done!!\n";
   }#else
 } #for chromsome
@@ -141,13 +143,6 @@ close(OUTFILEUTR3LINK);
 close(OUTFILEUPSTREAMLINK);
 close(OUTFILEDOWNSTREAMLINK);
 
-`cp "$exonfile.cds_link" "$exonfile.cds_link_copy"`;
-`cp "$exonfile.intron_link" "$exonfile.intron_link_copy"`;
-`cp "$exonfile.utr5_link" "$exonfile.utr5_link_copy"`;
-`cp "$exonfile.utr3_link" "$exonfile.utr3_link_copy"`;
-`cp "$exonfile.upstream_link" "$exonfile.upstream_link_copy"`;
-`cp "$exonfile.downstream_link" "$exonfile.downstream_link_copy"`;
-
 my $out_cds_link_shrink="$exonfile".".cds_link_shrink";
 my $out_intron_link_shrink="$exonfile".".intron_link_shrink";
 my $out_utr5_link_shrink="$exonfile".".utr5_link_shrink";
@@ -177,11 +172,13 @@ open OUTFILEUPSTREAMGENE, ">$out_upstream_gene";
 open OUTFILEDOWNSTREAMGENE, ">$out_downstream_gene";
 
 sub func2 {
-  my ($f1, $f2, $f3, $f4) = @_;
+  my ($f1, $f2, $f3) = @_;
+  open EXONFILELINK, '<', $f1;
+  chomp(my @lins = <EXONFILELINK>);
+  close EXONFILELINK;
   my @array_link;
   my $i=0;
-  open(EXONFILELINK, $f1);
-  while(<EXONFILELINK>)
+  foreach (@lins)
   {
     if($array_link[$i] != 1)
     {
@@ -190,9 +187,8 @@ sub func2 {
       my $chrstart = $exonline[0];
       my $maxStop = $exonline[1];
       my $maxGene = $exonline[2];
-      open(EXONFILELINKCOPY, $f2);
       my $j=0;
-      while(<EXONFILELINKCOPY>)
+      foreach (@lins)
       {
         chomp;
         @exonlinelink=split(/\t/,$_);
@@ -211,21 +207,19 @@ sub func2 {
         }
         $j++;
       }
-      close(EXONFILELINKCOPY);
-      print $f3 $chrstart, "\t", $maxStop, "\n";
-      print $f4 $chrstart, "\t", $maxGene, "\n";
+      print $f2 $chrstart, "\t", $maxStop, "\n";
+      print $f3 $chrstart, "\t", $maxGene, "\n";
     }
     $i++;
   }
-  close EXONFILELINK;
 }
 
-func2("$exonfile.cds_link", "$exonfile.cds_link_copy", OUTFILECDSLINKSHRINK, OUTFILECDSGENE);
-func2("$exonfile.intron_link", "$exonfile.intron_link_copy", OUTFILEINTRONLINKSHRINK, OUTFILEINTRONGENE);
-func2("$exonfile.utr5_link", "$exonfile.utr5_link_copy", OUTFILEUTR5LINKSHRINK, OUTFILEUTR5GENE);
-func2("$exonfile.utr3_link", "$exonfile.utr3_link_copy", OUTFILEUTR3LINKSHRINK, OUTFILEUTR3GENE);
-func2("$exonfile.upstream_link", "$exonfile.upstream_link_copy", OUTFILEUPSTREAMLINKSHRINK, OUTFILEUPSTREAMGENE);
-func2("$exonfile.downstream_link", "$exonfile.downstream_link_copy", OUTFILEDOWNSTREAMLINKSHRINK, OUTFILEDOWNSTREAMGENE);
+func2("$exonfile.cds_link", OUTFILECDSLINKSHRINK, OUTFILECDSGENE);
+func2("$exonfile.intron_link", OUTFILEINTRONLINKSHRINK, OUTFILEINTRONGENE);
+func2("$exonfile.utr5_link", OUTFILEUTR5LINKSHRINK, OUTFILEUTR5GENE);
+func2("$exonfile.utr3_link", OUTFILEUTR3LINKSHRINK, OUTFILEUTR3GENE);
+func2("$exonfile.upstream_link", OUTFILEUPSTREAMLINKSHRINK, OUTFILEUPSTREAMGENE);
+func2("$exonfile.downstream_link", OUTFILEDOWNSTREAMLINKSHRINK, OUTFILEDOWNSTREAMGENE);
 
 close(OUTFILECDSLINKSHRINK);
 close(OUTFILEINTRONLINKSHRINK);

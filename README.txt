@@ -21,6 +21,8 @@ or run the following steps in a sequential order (Note: the first two steps were
 
 # Generate exon annotation file
 1) perl Algorithm_generating_annotation_exon.pl ChrAll_knownGene.txt
+or
+ python Algorithm_generating_annotation_exon.py ChrAll_knownGene.txt
 
 # Process exon annotation files and generate feature start and gene mapping files
 2) perl Algorithm_preprocessing_exon_annotation_RR.pl ChrAll_knownGene.txt.exons
@@ -36,8 +38,7 @@ perl Algorithm_mapping_variants_reporting_class_intronLocation_updown.pl ChrAll_
 4) perl Algorithm_predicting_full_AA_change_samtools_updown.pl VCF_input_file_in_tab_delimited_format.txt.append kgXref.txt hg19_CDSIntronWithSign.txt.out ChrAll_knownGene.txt > VCF_input_file_in_tab_delimited_format.txt.out.txt
 (perl Algorithm_predicting_full_AA_change_samtools_updown.pl 007_crop.vcf.append kgXref.txt hg19_CDSIntronWithSign.txt.out ChrAll_knownGene.txt >007_crop.vcf.out.txt)
 
-
-#Prioritize mutation effects
+# Prioritize mutation effects
 5) perl Algorithm_prioritizing_mutation_headerTop_updown.pl VCF_input_file_in_tab_delimited_format.txt.append.out.txt
 (perl Algorithm_prioritizing_mutation_headerTop_updown.pl 007_crop.vcf.append.out.txt)
 
