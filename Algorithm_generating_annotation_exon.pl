@@ -19,7 +19,7 @@ $down_flank=500;
 
 open INFILE, "<$infile";
 open OUTFILE, ">$outfile";
-print OUTFILE "bin\tname\tchrom\ttxStart\ttxEnd\tcdsStart\tcdsEnd\tExonNumber\texStart\texEnd\tintronStart\tintronEnd\tUTR5Start\tUTR5End\tUTR3Start\tUTR3End\tupstreamStart\tupstreamEnd\tdownstreamStart\tdownstreamEnd\n";
+print OUTFILE "bin\tname\tchrom\ttxStart\ttxEnd\tcdsStart\tcdsEnd\tExonNumber\texStart\texEnd\tintronStart\tintronEnd\tutr5Start\tutr5End\tutr3Start\tutr3End\tupstreamStart\tupstreamEnd\tdownstreamStart\tdownstreamEnd\n";
 
 while(<INFILE>)  #use the Perl while loop to read a file line by line to the end of the file
 {

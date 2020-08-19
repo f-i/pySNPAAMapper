@@ -53,43 +53,43 @@ c['intronStart']=c['exEnd'].shift(1) + exonboundary_offset
 c['intronEnd']=c['exStart'] - exonboundary_offset
 c.loc[c.txStart == c.exStart,["intronStart","intronEnd"]] = np.nan
 
-c['UTR5Start']=np.nan
-c.loc[(c.strand=='+')&(c.exStart<=c.cdsStart),'UTR5Start']=c.exStart
+c['utr5Start']=np.nan
+c.loc[(c.strand=='+')&(c.exStart<=c.cdsStart),'utr5Start']=c.exStart
 c.loc[(c.strand=='-')&(c.exStart>c.cdsStart)&(c.exEnd>c.cdsEnd)&(c.exStart>c.cdsEnd),
-      'UTR5Start']=c.exStart
+      'utr5Start']=c.exStart
 c.loc[(c.strand=='-')&(c.exStart>c.cdsStart)&(c.exEnd>c.cdsEnd)&(c.exStart<=c.cdsEnd),
-      'UTR5Start']=c.cdsEnd + 1
+      'utr5Start']=c.cdsEnd + 1
 c.loc[(c.strand=='-')&(c.exStart<=c.cdsStart)&(c.exEnd>=c.cdsStart)&(c.exEnd>=c.cdsEnd),
-      'UTR5Start']=c.cdsEnd + 1
+      'utr5Start']=c.cdsEnd + 1
 
-c['UTR5End']=np.nan
+c['utr5End']=np.nan
 c.loc[(c.strand=='+')&(c.exStart<=c.cdsStart)&(c.exEnd<c.cdsStart),
-      'UTR5End']=c.exEnd
+      'utr5End']=c.exEnd
 c.loc[(c.strand=='+')&(c.exStart<=c.cdsStart)&(c.exEnd>=c.cdsStart),
-      'UTR5End']=c.cdsStart - 1
+      'utr5End']=c.cdsStart - 1
 c.loc[(c.strand=='-')&(c.exStart>c.cdsStart)&(c.exEnd>c.cdsEnd),
-      'UTR5End']=c.exEnd
+      'utr5End']=c.exEnd
 c.loc[(c.strand=='-')&(c.exStart<=c.cdsStart)&(c.exEnd>=c.cdsStart)&(c.exEnd>=c.cdsEnd),
-      'UTR5End']=c.exEnd
+      'utr5End']=c.exEnd
 
-c['UTR3Start']=np.nan
-c.loc[(c.strand=='-')&(c.exStart<=c.cdsStart),'UTR3Start']=c.exStart
+c['utr3Start']=np.nan
+c.loc[(c.strand=='-')&(c.exStart<=c.cdsStart),'utr3Start']=c.exStart
 c.loc[(c.strand=='+')&(c.exStart>c.cdsStart)&(c.exEnd>c.cdsEnd)&(c.exStart>c.cdsEnd),
-      'UTR3Start']=c.exStart
+      'utr3Start']=c.exStart
 c.loc[(c.strand=='+')&(c.exStart>c.cdsStart)&(c.exEnd>c.cdsEnd)&(c.exStart<=c.cdsEnd),
-      'UTR3Start']=c.cdsEnd + 1
+      'utr3Start']=c.cdsEnd + 1
 c.loc[(c.strand=='+')&(c.exStart<=c.cdsStart)&(c.exEnd>=c.cdsStart)&(c.exEnd>=c.cdsEnd),
-      'UTR3Start']=c.cdsEnd + 1
+      'utr3Start']=c.cdsEnd + 1
 
-c['UTR3End']=np.nan
+c['utr3End']=np.nan
 c.loc[(c.strand=='-')&(c.exStart<=c.cdsStart)&(c.exEnd<c.cdsStart),
-      'UTR3End']=c.exEnd
+      'utr3End']=c.exEnd
 c.loc[(c.strand=='-')&(c.exStart<=c.cdsStart)&(c.exEnd>=c.cdsStart),
-      'UTR3End']=c.cdsStart - 1
+      'utr3End']=c.cdsStart - 1
 c.loc[(c.strand=='+')&(c.exStart>c.cdsStart)&(c.exEnd>c.cdsEnd),
-      'UTR3End']=c.exEnd
+      'utr3End']=c.exEnd
 c.loc[(c.strand=='+')&(c.exStart<=c.cdsStart)&(c.exEnd>=c.cdsStart)&(c.exEnd>=c.cdsEnd),
-      'UTR3End']=c.exEnd
+      'utr3End']=c.exEnd
 
 c['upstreamStart']=np.nan
 c.loc[(c.strand=='+')&(c.exStart<=c.cdsStart)&(c.exStart==c.txStart),
@@ -142,11 +142,11 @@ c.drop(columns=['cdsStart', 'cdsEnd', 'strand', 'exonCount'],inplace=True)
 c.rename(columns={'cdsStart_': 'cdsStart','cdsEnd_':'cdsEnd'},
          inplace=True)
 c=c[['bin','name','chrom','txStart','txEnd','cdsStart','cdsEnd','ExonNumber',
-     'exStart','exEnd','intronStart','intronEnd','UTR5Start','UTR5End','UTR3Start',
-     'UTR3End','upstreamStart','upstreamEnd','downstreamStart','downstreamEnd']]
+     'exStart','exEnd','intronStart','intronEnd','utr5Start','utr5End','utr3Start',
+     'utr3End','upstreamStart','upstreamEnd','downstreamStart','downstreamEnd']]
 c=c.astype({'cdsStart': 'Int32','cdsEnd': 'Int32','intronStart': 'Int32',
-            'intronEnd': 'Int32','UTR5Start': 'Int32','UTR5End': 'Int32',
-            'UTR3Start': 'Int32','UTR3End': 'Int32','upstreamStart': 'Int32',
+            'intronEnd': 'Int32','utr5Start': 'Int32','utr5End': 'Int32',
+            'utr3Start': 'Int32','utr3End': 'Int32','upstreamStart': 'Int32',
             'upstreamEnd': 'Int32','downstreamStart': 'Int32','downstreamEnd':'Int32',})
 
 outFile = inFile + ".exons"
