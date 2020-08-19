@@ -1,8 +1,7 @@
-
 ########################################
 Authors: Bai, Y & J. Cavalcoli
 SNPAAMapper Version 2.0 (Copyright 2013)
-Python Translator: Chenjian Fu
+Python Translator: Chenjian Fu (with 2 Goals here: 1 Speed up old Perl scripts; 2 Translate Perl into Python)
 ########################################
 
 Program descriptions:

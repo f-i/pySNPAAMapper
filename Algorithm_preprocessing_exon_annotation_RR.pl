@@ -56,10 +56,9 @@ sub func0 {
   my ($start, $end, $tempArray, $allchromstart, ) = @_;
   if($exonline[$start] ne "NA" || $exonline[$end] ne "NA")
   {
-    push @{$tempArray}, $exonline[$start];
-    ${$allchromstart}{$exonline[2]} = [ @{$tempArray} ];
-    print {@_[-1]} "$exonline[2]"._."$exonline[$start]","\t",$exonline[$end],"\t";
-    print {@_[-1]} $exonline[1],"\n";
+    push @{$tempArray}, $exonline[$start];  #only serves func1
+    ${$allchromstart}{$exonline[2]} = [ @{$tempArray} ];  #only serves func1
+    print {@_[-1]} "$exonline[2]"._."$exonline[$start]","\t",$exonline[$end],"\t",$exonline[1],"\n";
   }
 }
 
@@ -71,7 +70,7 @@ close EXONFILE;
 foreach $chromosome (@chrArray)
 {
   chomp $chromosome;
-  if(($chromosome =~ /\_/) || ($chromosome =~ 'chrom'))
+  if(($chromosome =~ /\_/) || ($chromosome =~ 'chrom'))  #=~ is testing whether underscore is a substring of the value of $chromosome
   {
     next;
   } # this discards the strange chrom pieces that are mapped
@@ -83,11 +82,11 @@ foreach $chromosome (@chrArray)
     @tempArray_utr3=();
     @tempArray_upstream=();
     @tempArray_downstream=();
-    print "======================Loop chromosome $chromosome and Hash $exonfile start...\n";
+    print "==========Loop chromosome $chromosome and Hash $exonfile start...\n";
     foreach (@lines)
     {
       chomp;
-      if($_ =~ /bin/)
+      if($_ =~ /name/)
       {
         next;
       }
@@ -105,7 +104,7 @@ foreach $chromosome (@chrArray)
         }#firstif
       }
     }
-    print "======================Loop chromosome $chromosome and Hash $exonfile done!!\n";
+    print "==========Loop chromosome $chromosome and Hash $exonfile done!!\n";
   }#else
 } #for chromsome
 
