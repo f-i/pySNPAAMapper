@@ -1,7 +1,10 @@
-#!/usr/bin/perl 
+#!/usr/bin/env perl
 
-#Algorithm for mapping identified variants onto the genomic location and reporting the hit class 
-#USAGE: perl Algorithm_mapping_variants_reports_class_intronLocation.pl ChrAll_knownGene.txt.exons VCF_input_file_in_tab_delimited_format.txt IntronExon_boundary_in_bp
+# Algorithm for mapping identified variants onto the genomic location and
+# reporting the hit class
+
+# USAGE:
+# perl Algorithm_mapping_variants_reports_class_intronLocation.pl ChrAll_knownGene.txt.exons VCF_input_file_in_tab_delimited_format.txt IntronExon_boundary_in_bp
 
 use POSIX;
 
@@ -11,20 +14,22 @@ my $exonbuffer;
 
 my $intronOption;
 
-if (($#ARGV + 1)== 2 ) {
-	($exonfile,$snpfile) = @ARGV;
-	print "The program assumes that you do NOT want to report how far the variant falls in the exon boundary.\n";
-	$intronOption = -1;
+if(($#ARGV + 1)== 2 )
+{
+  ($exonfile,$snpfile) = @ARGV;
+  print "The program assumes that you do NOT want to report how far the variant falls in the exon boundary.\n";
+  $intronOption = -1;
 }
-elsif (($#ARGV + 1) == 3 ) {
-	($exonfile,$snpfile,$exonbuffer) = @ARGV;
-	print "The program assumes that you DO want to report how far the variant falls in the exon boundary.\nOnly variants flanking its nearby exon with <= $exonbuffer bp is reported\n";
-	$intronOption = 1;
+elsif(($#ARGV + 1) == 3 )
+{
+  ($exonfile,$snpfile,$exonbuffer) = @ARGV;
+  print "The program assumes that you DO want to report how far the variant falls in the exon boundary.\nOnly variants flanking its nearby exon with <= $exonbuffer bp is reported\n";
+  $intronOption = 1;
 }
 else
 {
-	print "The input commands do not meet the requirement. Please see the README file and try again.\n";
-	exit;
+  print "The input commands do not meet the requirement. Please see the README file and try again.\n";
+  exit;
 }
 
 %chr_cds=();
@@ -42,7 +47,7 @@ else
 
 #For each feature, make a hash for all unique start as key and end as value
 open(EXONFILECDSLINK, "$exonfile.cds_link_shrink");
-while (<EXONFILECDSLINK>)
+while(<EXONFILECDSLINK>)
 {
   chomp;
   @exonlinecds=split(/\t/,$_);
@@ -51,7 +56,7 @@ while (<EXONFILECDSLINK>)
 close EXONFILECDSLINK;
 
 open(EXONFILECDSGENE, "$exonfile.cds_gene");
-while (<EXONFILECDSGENE>)
+while(<EXONFILECDSGENE>)
 {
   chomp;
   @exonlinecdsgene=split(/\t/,$_);
@@ -59,9 +64,8 @@ while (<EXONFILECDSGENE>)
 }
 close EXONFILECDSGENE;
 
-
 open(EXONFILEINTRONLINK, "$exonfile.intron_link_shrink");
-while (<EXONFILEINTRONLINK>)
+while(<EXONFILEINTRONLINK>)
 {
   chomp;
   @exonlineintron=split(/\t/,$_);
@@ -70,7 +74,7 @@ while (<EXONFILEINTRONLINK>)
 close EXONFILEINTRONLINK;
 
 open(EXONFILEINTRONGENE, "$exonfile.intron_gene");
-while (<EXONFILEINTRONGENE>)
+while(<EXONFILEINTRONGENE>)
 {
   chomp;
   @exonlineintrongene=split(/\t/,$_);
@@ -78,9 +82,8 @@ while (<EXONFILEINTRONGENE>)
 }
 close EXONFILEINTRONGENE;
 
-
 open(EXONFILEUTR5LINK, "$exonfile.utr5_link_shrink");
-while (<EXONFILEUTR5LINK>)
+while(<EXONFILEUTR5LINK>)
 {
   chomp;
   @exonlineutr5=split(/\t/,$_);
@@ -89,7 +92,7 @@ while (<EXONFILEUTR5LINK>)
 close EXONFILEUTR5LINK;
 
 open(EXONFILEUTR5GENE, "$exonfile.utr5_gene");
-while (<EXONFILEUTR5GENE>)
+while(<EXONFILEUTR5GENE>)
 {
   chomp;
   @exonlineutr5gene=split(/\t/,$_);
@@ -98,7 +101,7 @@ while (<EXONFILEUTR5GENE>)
 close EXONFILEUTR5GENE;
 
 open(EXONFILEUTR3LINK, "$exonfile.utr3_link_shrink");
-while (<EXONFILEUTR3LINK>)
+while(<EXONFILEUTR3LINK>)
 {
   chomp;
   @exonlineutr3=split(/\t/,$_);
@@ -107,7 +110,7 @@ while (<EXONFILEUTR3LINK>)
 close EXONFILEUTR3LINK;
 
 open(EXONFILEUTR3GENE, "$exonfile.utr3_gene");
-while (<EXONFILEUTR3GENE>)
+while(<EXONFILEUTR3GENE>)
 {
   chomp;
   @exonlineutr3gene=split(/\t/,$_);
@@ -115,10 +118,8 @@ while (<EXONFILEUTR3GENE>)
 }
 close EXONFILEUTR3GENE;
 
-
-
 open(EXONFILEUPSTREAMLINK, "$exonfile.upstream_link_shrink");
-while (<EXONFILEUPSTREAMLINK>)
+while(<EXONFILEUPSTREAMLINK>)
 {
   chomp;
   @exonlineupstream=split(/\t/,$_);
@@ -127,7 +128,7 @@ while (<EXONFILEUPSTREAMLINK>)
 close EXONFILEUPSTREAMLINK;
 
 open(EXONFILEUPSTREAMGENE, "$exonfile.upstream_gene");
-while (<EXONFILEUPSTREAMGENE>)
+while(<EXONFILEUPSTREAMGENE>)
 {
   chomp;
   @exonlineupstreamgene=split(/\t/,$_);
@@ -136,7 +137,7 @@ while (<EXONFILEUPSTREAMGENE>)
 close EXONFILEUPSTREAMGENE;
 
 open(EXONFILEDOWNSTREAMLINK, "$exonfile.downstream_link_shrink");
-while (<EXONFILEDOWNSTREAMLINK>)
+while(<EXONFILEDOWNSTREAMLINK>)
 {
   chomp;
   @exonlinedownstream=split(/\t/,$_);
@@ -145,7 +146,7 @@ while (<EXONFILEDOWNSTREAMLINK>)
 close EXONFILEDOWNSTREAMLINK;
 
 open(EXONFILEDOWNSTREAMGENE, "$exonfile.downstream_gene");
-while (<EXONFILEDOWNSTREAMGENE>)
+while(<EXONFILEDOWNSTREAMGENE>)
 {
   chomp;
   @exonlinedownstreamgene=split(/\t/,$_);
@@ -153,13 +154,11 @@ while (<EXONFILEDOWNSTREAMGENE>)
 }
 close EXONFILEDOWNSTREAMGENE;
 
-
-
 #map vcf variant back onto genome location and report the hit class
 open OUTFILE1, ">$snpfile.append";
 
 open SNPFILE, "<$snpfile";
-while (my $line = <SNPFILE>) 
+while(my $line = <SNPFILE>)
 {
   my @tempArray_cds;
   my @tempArray_intron;
@@ -177,7 +176,7 @@ while (my $line = <SNPFILE>)
   {
   @snpline = split(/\t/,$line);
   $snp_chr = $snpline[0];
-  $snp_start = $snpline[1]; 
+  $snp_start = $snpline[1];
   open(EXONFILECDS, "$exonfile.cds");
   while (my $linecds = <EXONFILECDS>)
   {
@@ -185,8 +184,7 @@ while (my $line = <SNPFILE>)
     my @linecds_array = split(/\t/, $linecds);
     #given the same genome chromosome as variant's chrom
     if($snp_chr eq $linecds_array[0])
-    {
-      #only store all of start postions in the array (without chromosome information included) for binary search
+    { #only store all of start postions in the array (without chromosome information included) for binary search
       for ($j_cds=1; $j_cds<($#linecds_array + 1); $j_cds++)
       {
         push @tempArray_cds, $linecds_array[$j_cds];
@@ -196,14 +194,14 @@ while (my $line = <SNPFILE>)
   close(EXONFILECDS);
 
       #cdsstart is 0-based, and cdsend is 1-based
-    my @sortchromArray_cds = @tempArray_cds;
-        $length_cds= scalar(@sortchromArray_cds);
-        $cursor_cds=$length_cds/2;
-        $localmin_cds=0;
-        $localmax_cds=$length_cds;
-        $traverse_cds=0;
-until (($localmax_cds-$localmin_cds)<=1) {
-#print "cursor=|$cursor|\n";
+  my @sortchromArray_cds = @tempArray_cds;
+      $length_cds= scalar(@sortchromArray_cds);
+      $cursor_cds=$length_cds/2;
+      $localmin_cds=0;
+      $localmax_cds=$length_cds;
+      $traverse_cds=0;
+  until (($localmax_cds-$localmin_cds)<=1) {
+  #print "cursor=|$cursor|\n";
         if ($snp_start <= $sortchromArray_cds[$cursor_cds]) {
                         $localmax_cds=floor($cursor_cds);
                         &left_cds($cursor_cds, $localmin_cds);}
@@ -217,10 +215,11 @@ until (($localmax_cds-$localmin_cds)<=1) {
                        }
         } # end until
 
-        if ( ($snp_start > $sortchromArray_cds[$cursor_cds]) && ($snp_start<=$chr_cds{"$snp_chr"._."$sortchromArray_cds[$cursor_cds]"})  && ($sortchromArray_cds[$cursor_cds] ne "NA") && ($chr_cds{"$snp_chr"._."$sortchromArray_cds[$cursor_cds]"} ne "NA")  ) {
-          		print  OUTFILE1 $line, "\t", "CDSHIT", "\t", $gene_cds{"$snp_chr"._."$sortchromArray_cds[$cursor_cds]"}, "\n";
-          		$cdsCount++;
-                }
+        if ( ($snp_start > $sortchromArray_cds[$cursor_cds]) && ($snp_start<=$chr_cds{"$snp_chr"._."$sortchromArray_cds[$cursor_cds]"})  && ($sortchromArray_cds[$cursor_cds] ne "NA") && ($chr_cds{"$snp_chr"._."$sortchromArray_cds[$cursor_cds]"} ne "NA")  )
+        {
+          print OUTFILE1 $line, "\t", "CDSHIT", "\t", $gene_cds{"$snp_chr"._."$sortchromArray_cds[$cursor_cds]"}, "\n";
+          $cdsCount++;
+        }
 
   open(EXONFILEINTRON, "$exonfile.intron");
   while (my $lineintron = <EXONFILEINTRON>)
@@ -230,7 +229,7 @@ until (($localmax_cds-$localmin_cds)<=1) {
     if($snp_chr eq $lineintron_array[0])
     {
       for ($j_intron=1; $j_intron<($#lineintron_array + 1); $j_intron++)
-      {   
+      {
         push @tempArray_intron, $lineintron_array[$j_intron];
       }
     }
@@ -239,13 +238,13 @@ until (($localmax_cds-$localmin_cds)<=1) {
 
 
       # inronstart is 1-based, add intronhit buffer number for parse_discrepancy_jan_inronSeparate_final.perl because intronend is 0-based
-    my @sortchromArray_intron = @tempArray_intron;
-        $length_intron= scalar(@sortchromArray_intron);
-        $cursor_intron=$length_intron/2;
-        $localmin_intron=0;
-        $localmax_intron=$length_intron;
-        $traverse_intron=0;
-until (($localmax_intron-$localmin_intron)<=1) {
+  my @sortchromArray_intron = @tempArray_intron;
+      $length_intron= scalar(@sortchromArray_intron);
+      $cursor_intron=$length_intron/2;
+      $localmin_intron=0;
+      $localmax_intron=$length_intron;
+      $traverse_intron=0;
+  until (($localmax_intron-$localmin_intron)<=1) {
         if ($snp_start <= $sortchromArray_intron[$cursor_intron]) {
                         $localmax_intron=floor($cursor_intron);
                         &left_intron($cursor_intron, $localmin_intron);}
@@ -259,8 +258,8 @@ until (($localmax_intron-$localmin_intron)<=1) {
                         }
         } # end until
 
-	if ($intronOption == 1)
-	{
+  if($intronOption == 1)
+  {
         	if ( ($snp_start >= $sortchromArray_intron[$cursor_intron]) && ($snp_start < $sortchromArray_intron[$cursor_intron] + $exonbuffer) || ($snp_start <= $chr_intron{"$snp_chr"._."$sortchromArray_intron[$cursor_intron]"} + 1)  && ($snp_start > $chr_intron{"$snp_chr"._."$sortchromArray_intron[$cursor_intron]"} + 1 - $exonbuffer) && ($sortchromArray_intron[$cursor_intron] ne "NA") && ($chr_intron{"$snp_chr"._."$sortchromArray_intron[$cursor_intron]"} ne "NA")  ) {
         		my $hitbuffer;
         		my $direction;
@@ -278,20 +277,20 @@ until (($localmax_intron-$localmin_intron)<=1) {
         		print  OUTFILE1 $line, "\t", "INTRONHIT.$hitbuffer.$direction", "\t", $gene_intron{"$snp_chr"._."$sortchromArray_intron[$cursor_intron]"}, "\n";
           		$intronCount++;
                 }
-	}
+  }
 
-	if ($intronOption == -1)
-	{
+  if($intronOption == -1)
+  {
         	if ( ($snp_start >= $sortchromArray_intron[$cursor_intron]) && ($snp_start <= $chr_intron{"$snp_chr"._."$sortchromArray_intron[$cursor_intron]"} + 1)  && ($sortchromArray_intron[$cursor_intron] ne "NA") && ($chr_intron{"$snp_chr"._."$sortchromArray_intron[$cursor_intron]"} ne "NA")  ) {
         		print  OUTFILE1 $line, "\t", "INTRONHIT", "\t", $gene_intron{"$snp_chr"._."$sortchromArray_intron[$cursor_intron]"}, "\n";
           		$intronCount++;
 
 		}
-	}
+  }
 
 
   open(EXONFILEUTR5, "$exonfile.utr5");
-  while (my $lineutr5 = <EXONFILEUTR5>)
+  while(my $lineutr5 = <EXONFILEUTR5>)
   {
     chomp($lineutr5);
     my @lineutr5_array = split(/\t/, $lineutr5);
@@ -305,15 +304,15 @@ until (($localmax_intron-$localmin_intron)<=1) {
   }
   close(EXONFILEUTR5);
 
-      #utr5start is 0-based, and utr5end is 0-based
-    my @sortchromArray_utr5 = @tempArray_utr5;
-        $length_utr5= scalar(@sortchromArray_utr5);
-        $cursor_utr5=$length_utr5/2;
-        $localmin_utr5=0;
-        $localmax_utr5=$length_utr5;
-        $traverse_utr5=0;
-until (($localmax_utr5-$localmin_utr5)<=1) {
-#print "cursor=|$cursor|\n";
+  #utr5start is 0-based, and utr5end is 0-based
+  my @sortchromArray_utr5 = @tempArray_utr5;
+      $length_utr5= scalar(@sortchromArray_utr5);
+      $cursor_utr5=$length_utr5/2;
+      $localmin_utr5=0;
+      $localmax_utr5=$length_utr5;
+      $traverse_utr5=0;
+  until (($localmax_utr5-$localmin_utr5)<=1) {
+  #print "cursor=|$cursor|\n";
         if ($snp_start <= $sortchromArray_utr5[$cursor_utr5]) {
                         $localmax_utr5=floor($cursor_utr5);
                         &left_utr5($cursor_utr5, $localmin_utr5);}
@@ -334,7 +333,7 @@ until (($localmax_utr5-$localmin_utr5)<=1) {
 
 
   open(EXONFILEUPSTREAM, "$exonfile.upstream");
-  while (my $lineupstream = <EXONFILEUPSTREAM>)
+  while(my $lineupstream = <EXONFILEUPSTREAM>)
   {
     chomp($lineupstream);
     my @lineupstream_array = split(/\t/, $lineupstream);
@@ -468,88 +467,85 @@ close SNPFILE;
 close(OUTFILE1);
 
 sub left_cds {
-         $cursor_cds = shift @_;
-         $localmin_cds = shift @_;
-         $cursor_cds = floor(($cursor_cds+$localmin_cds)/2);
-         return $cursor_cds;
-        }
+    $cursor_cds = shift @_;
+    $localmin_cds = shift @_;
+    $cursor_cds = floor(($cursor_cds+$localmin_cds)/2);
+    return $cursor_cds;
+    }
 
 sub right_cds {
-         $cursor_cds = shift @_;
-         $localmax_cds = shift @_;
-         $cursor_cds = floor(($cursor_cds+$localmax_cds)/2);
-         return $cursor_cds;
-        }
+    $cursor_cds = shift @_;
+    $localmax_cds = shift @_;
+    $cursor_cds = floor(($cursor_cds+$localmax_cds)/2);
+    return $cursor_cds;
+    }
 
 sub left_intron {
-         $cursor_intron = shift @_;
-         $localmin_intron = shift @_;
-         $cursor_intron = floor(($cursor_intron+$localmin_intron)/2);
-         return $cursor_intron;
-        }
+    $cursor_intron = shift @_;
+    $localmin_intron = shift @_;
+    $cursor_intron = floor(($cursor_intron+$localmin_intron)/2);
+    return $cursor_intron;
+    }
 
 sub right_intron {
-         $cursor_intron = shift @_;
-         $localmax_intron = shift @_;
-         $cursor_intron = floor(($cursor_intron+$localmax_intron)/2);
-         return $cursor_intron;
-        }
+    $cursor_intron = shift @_;
+    $localmax_intron = shift @_;
+    $cursor_intron = floor(($cursor_intron+$localmax_intron)/2);
+    return $cursor_intron;
+    }
 
 sub left_utr5 {
-         $cursor_utr5 = shift @_;
-         $localmin_utr5 = shift @_;
-         $cursor_utr5 = floor(($cursor_utr5+$localmin_utr5)/2);
-         return $cursor_utr5;
-        }
+    $cursor_utr5 = shift @_;
+    $localmin_utr5 = shift @_;
+    $cursor_utr5 = floor(($cursor_utr5+$localmin_utr5)/2);
+    return $cursor_utr5;
+    }
 
 sub right_utr5 {
-         $cursor_utr5 = shift @_;
-         $localmax_utr5 = shift @_;
-         $cursor_utr5 = floor(($cursor_utr5+$localmax_utr5)/2);
-         return $cursor_utr5;
-        }
+    $cursor_utr5 = shift @_;
+    $localmax_utr5 = shift @_;
+    $cursor_utr5 = floor(($cursor_utr5+$localmax_utr5)/2);
+    return $cursor_utr5;
+    }
 
 sub left_utr3 {
-         $cursor_utr3 = shift @_;
-         $localmin_utr3 = shift @_;
-         $cursor_utr3 = floor(($cursor_utr3+$localmin_utr3)/2);
-         return $cursor_utr3;
-        }
+    $cursor_utr3 = shift @_;
+    $localmin_utr3 = shift @_;
+    $cursor_utr3 = floor(($cursor_utr3+$localmin_utr3)/2);
+    return $cursor_utr3;
+    }
 
 sub right_utr3 {
-         $cursor_utr3 = shift @_;
-         $localmax_utr3 = shift @_;
-         $cursor_utr3 = floor(($cursor_utr3+$localmax_utr3)/2);
-         return $cursor_utr3;
-        }
-
+    $cursor_utr3 = shift @_;
+    $localmax_utr3 = shift @_;
+    $cursor_utr3 = floor(($cursor_utr3+$localmax_utr3)/2);
+    return $cursor_utr3;
+    }
 
 sub left_upstream {
-         $cursor_upstream = shift @_;
-         $localmin_upstream = shift @_;
-         $cursor_upstream = floor(($cursor_upstream+$localmin_upstream)/2);
-         return $cursor_upstream;
-        }
+    $cursor_upstream = shift @_;
+    $localmin_upstream = shift @_;
+    $cursor_upstream = floor(($cursor_upstream+$localmin_upstream)/2);
+    return $cursor_upstream;
+    }
 
 sub right_upstream {
-         $cursor_upstream = shift @_;
-         $localmax_upstream = shift @_;
-         $cursor_upstream = floor(($cursor_upstream+$localmax_upstream)/2);
-         return $cursor_upstream;
-        }
-
+    $cursor_upstream = shift @_;
+    $localmax_upstream = shift @_;
+    $cursor_upstream = floor(($cursor_upstream+$localmax_upstream)/2);
+    return $cursor_upstream;
+    }
 
 sub left_downstream {
-         $cursor_downstream = shift @_;
-         $localmin_downstream = shift @_;
-         $cursor_downstream = floor(($cursor_downstream+$localmin_downstream)/2);
-         return $cursor_downstream;
-        }
+    $cursor_downstream = shift @_;
+    $localmin_downstream = shift @_;
+    $cursor_downstream = floor(($cursor_downstream+$localmin_downstream)/2);
+    return $cursor_downstream;
+    }
 
 sub right_downstream {
-         $cursor_downstream = shift @_;
-         $localmax_downstream = shift @_;
-         $cursor_downstream = floor(($cursor_downstream+$localmax_downstream)/2);
-         return $cursor_downstream;
-        }
-
+    $cursor_downstream = shift @_;
+    $localmax_downstream = shift @_;
+    $cursor_downstream = floor(($cursor_downstream+$localmax_downstream)/2);
+    return $cursor_downstream;
+    }
