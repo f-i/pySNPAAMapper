@@ -25,6 +25,8 @@ or
 
 # Process exon annotation files and generate feature start and gene mapping files
 2) perl Algorithm_preprocessing_exon_annotation_RR.pl ChrAll_knownGene.txt.exons
+or
+ python Algorithm_preprocessing_exon_annotation_RR.py ChrAll_knownGene.txt.exons
 
 # Classify variants by regions (CDS, Upstream, Downstream, Intron, UTRs...)
 3) perl Algorithm_mapping_variants_reporting_class_intronLocation_updown.pl ChrAll_knownGene.txt.exons VCF_input_file_in_tab_delimited_format.txt

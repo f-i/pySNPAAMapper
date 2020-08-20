@@ -8,9 +8,9 @@ USAGE:
 
 '''
 
-import sys, os
+import sys
 from fileinput import FileInput
-import pandas as pd, numpy as np
+import pandas as pd
 
 def argsCheck(numArgs):
     '''Checks if in proper number of arguments are passed; gives instructions on
