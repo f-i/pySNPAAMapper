@@ -166,7 +166,6 @@ while(my $line = <SNPFILE>)
   my @tempArray_utr3;
   my @tempArray_upstream;
   my @tempArray_downstream;
-
   chomp($line);
   if($line =~ m/^#/)
   {
@@ -215,7 +214,7 @@ while(my $line = <SNPFILE>)
       }
 
       $traverse_cds++;
-      if($traverse_cds >100)
+      if($traverse_cds>100)
       {
         die "Excess Traverse: min=$localmin_cds\tmax=$localmax_cds\tcursor=$cursor_cds\tVPOS=$snp_start\tArrayCursor=$sortchromArray_cds[$cursor_cds]\t$sortchromArray_cds[$cursor_cds-1]\t$sortchromArray_cds[$cursor_cds+1]\n";
       }
@@ -337,7 +336,7 @@ while(my $line = <SNPFILE>)
         &right_utr5($cursor_utr5, $localmax_utr5);
       }
       $traverse_utr5++;
-      if($traverse_utr5 >100)
+      if($traverse_utr5>100)
       {
         die "Excess Traverse: min=$localmin_utr5\tmax=$localmax_utr5\tcursor=$cursor_utr5\tVPOS=$snp_start\tArrayCursor=$sortchromArray_utr5[$cursor_utr5]\t$sortchromArray_utr5[$cursor_utr5-1]\t$sortchromArray_utr5[$cursor_utr5+1]\n";
       }
@@ -385,7 +384,7 @@ while(my $line = <SNPFILE>)
         &right_upstream($cursor_upstream, $localmax_upstream);
       }
       $traverse_upstream++;
-      if($traverse_upstream >100)
+      if($traverse_upstream>100)
       {
         die "Excess Traverse: min=$localmin_upstream\tmax=$localmax_upstream\tcursor=$cursor_upstream\tVPOS=$snp_start\tArrayCursor=$sortchromArray_upstream[$cursor_upstream]\t$sortchromArray_upstream[$cursor_upstream-1]\t$sortchromArray_upstream[$cursor_upstream+1]\n";
       }
@@ -433,7 +432,7 @@ while(my $line = <SNPFILE>)
         &right_utr3($cursor_utr3, $localmax_utr3);
       }
       $traverse_utr3++;
-      if($traverse_utr3 >100)
+      if($traverse_utr3>100)
       {
         die "Excess Traverse: min=$localmin_utr3\tmax=$localmax_utr3\tcursor=$cursor_utr3\tVPOS=$snp_start\tArrayCursor=$sortchromArray_utr3[$cursor_utr3]\t$sortchromArray_utr3[$cursor_utr3-1]\t$sortchromArray_utr3[$cursor_utr3+1]\n";
       }
@@ -481,7 +480,7 @@ while(my $line = <SNPFILE>)
         &right_downstream($cursor_downstream, $localmax_downstream);
       }
       $traverse_downstream++;
-      if($traverse_downstream >100)
+      if($traverse_downstream>100)
       {
         die "Excess Traverse: min=$localmin_downstream\tmax=$localmax_downstream\tcursor=$cursor_downstream\tVPOS=$snp_start\tArrayCursor=$sortchromArray_downstream[$cursor_downstream]\t$sortchromArray_downstream[$cursor_downstream-1]\t$sortchromArray_downstream[$cursor_downstream+1]\n";
       }
