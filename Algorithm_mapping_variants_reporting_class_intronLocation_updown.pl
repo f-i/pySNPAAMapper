@@ -74,6 +74,66 @@ func0(EXONFILEDOWNSTREAMGENE,$exonfile.downstream_gene,gene_downstream);
 #map vcf variant back onto genome location and report the hit class
 open OUTFILE1, ">$snpfile.append";
 
+sub left {
+  my ($f,$f0) = @_;
+  ${$f} = shift @_;
+  ${$f0} = shift @_;
+  ${$f} = floor((${$f}+${$f0})/2);
+  return ${$f};
+  }
+
+sub right {
+  my ($f,$f0) = @_;
+  ${$f} = shift @_;
+  ${$f0} = shift @_;
+  ${$f} = floor((${$f}+${$f0})/2);
+  return ${$f};
+  }
+
+sub func1 {
+  my ($f,$f0,$f1,$f2,$f3,$f4) = @_;
+  open(EXONFILE, "$exonfile.$f");
+  while(my $line = <EXONFILE>)
+  {
+    chomp($line);
+    my @line_array = split(/\t/, $line);
+    if($snp_chr eq $line_array[0])  #given the same genome chromosome as variant's chrom
+    { #only store all of start postions in the array (without chromosome information included) for binary search
+      for($j=1; $j<($#line_array + 1); $j++)
+      {
+        push @{$f1}, $line_array[$j];
+      }
+    }
+  }
+  close(EXONFILE);
+  #my @{$f0};
+  @{$f0} = @{$f1};
+  $length=scalar(@{$f0});
+  ${$f2}=$length/2;
+  $localmin=0;
+  $localmax=$length;
+  $traverse=0;
+  until(($localmax-$localmin)<=1)
+  {
+    #print "cursor=|$cursor|\n";
+    if($snp_start <= ${$f0}[${$f2}])
+    {
+      $localmax=floor(${$f2});
+      &left($f2, localmin);
+    }
+    if($snp_start >= ${$f0}[${$f2}])
+    {
+      $localmin=floor(${$f2});
+      &right($f2, localmax);
+    }
+    $traverse++;
+    if($traverse>100)
+    {
+      die "Excess Traverse: min=$localmin\tmax=$localmax\tcursor=${$f2}\tVPOS=$snp_start\tArrayCursor=${$f0}[${$f2}]\t${$f0}[${$f2}-1]\t${$f0}[${$f2}+1]\n";
+    }
+  } # end until
+}
+
 open SNPFILE, "<$snpfile";
 while(my $line = <SNPFILE>)
 {
@@ -94,91 +154,16 @@ while(my $line = <SNPFILE>)
     $snp_chr = $snpline[0];
     $snp_start = $snpline[1];
 
-    open(EXONFILECDS, "$exonfile.cds");
-    while(my $linecds = <EXONFILECDS>)
-    {
-      chomp($linecds);
-      my @linecds_array = split(/\t/, $linecds);
-      if($snp_chr eq $linecds_array[0])  #given the same genome chromosome as variant's chrom
-      { #only store all of start postions in the array (without chromosome information included) for binary search
-        for($j_cds=1; $j_cds<($#linecds_array + 1); $j_cds++)
-        {
-          push @tempArray_cds, $linecds_array[$j_cds];
-        }
-      }
-    }
-    close(EXONFILECDS);
     # cdsstart is 0-based, and cdsend is 1-based
-    my @sortchromArray_cds = @tempArray_cds;
-    $length_cds=scalar(@sortchromArray_cds);
-    $cursor_cds=$length_cds/2;
-    $localmin_cds=0;
-    $localmax_cds=$length_cds;
-    $traverse_cds=0;
-    until(($localmax_cds-$localmin_cds)<=1)
-    {
-      #print "cursor=|$cursor|\n";
-      if($snp_start <= $sortchromArray_cds[$cursor_cds])
-      {
-        $localmax_cds=floor($cursor_cds);
-        &left_cds($cursor_cds, $localmin_cds);
-      }
-      if($snp_start >= $sortchromArray_cds[$cursor_cds])
-      {
-        $localmin_cds=floor($cursor_cds);
-        &right_cds($cursor_cds, $localmax_cds);
-      }
-      $traverse_cds++;
-      if($traverse_cds>100)
-      {
-        die "Excess Traverse: min=$localmin_cds\tmax=$localmax_cds\tcursor=$cursor_cds\tVPOS=$snp_start\tArrayCursor=$sortchromArray_cds[$cursor_cds]\t$sortchromArray_cds[$cursor_cds-1]\t$sortchromArray_cds[$cursor_cds+1]\n";
-      }
-    } # end until
+    func1(cds,sortchromArray_cds,tempArray_cds,cursor_cds);
     if(($snp_start > $sortchromArray_cds[$cursor_cds]) && ($snp_start<=$chr_cds{"$snp_chr"._."$sortchromArray_cds[$cursor_cds]"}) && ($sortchromArray_cds[$cursor_cds] ne "NA") && ($chr_cds{"$snp_chr"._."$sortchromArray_cds[$cursor_cds]"} ne "NA"))
     {
       print OUTFILE1 $line, "\t", "CDSHIT", "\t", $gene_cds{"$snp_chr"._."$sortchromArray_cds[$cursor_cds]"}, "\n";
       $cdsCount++;
     }
 
-    open(EXONFILEINTRON, "$exonfile.intron");
-    while(my $lineintron = <EXONFILEINTRON>)
-    {
-      chomp($lineintron);
-      my @lineintron_array = split(/\t/, $lineintron);
-      if($snp_chr eq $lineintron_array[0])
-      {
-        for($j_intron=1; $j_intron<($#lineintron_array + 1); $j_intron++)
-        {
-          push @tempArray_intron, $lineintron_array[$j_intron];
-        }
-      }
-    }
-    close(EXONFILEINTRON);
     # inronstart is 1-based, add intronhit buffer number for parse_discrepancy_jan_inronSeparate_final.perl because intronend is 0-based
-    my @sortchromArray_intron = @tempArray_intron;
-    $length_intron=scalar(@sortchromArray_intron);
-    $cursor_intron=$length_intron/2;
-    $localmin_intron=0;
-    $localmax_intron=$length_intron;
-    $traverse_intron=0;
-    until(($localmax_intron-$localmin_intron)<=1)
-    {
-      if($snp_start <= $sortchromArray_intron[$cursor_intron])
-      {
-        $localmax_intron=floor($cursor_intron);
-        &left_intron($cursor_intron, $localmin_intron);
-      }
-      if($snp_start >= $sortchromArray_intron[$cursor_intron])
-      {
-        $localmin_intron=floor($cursor_intron);
-        &right_intron($cursor_intron, $localmax_intron);
-      }
-      $traverse_intron++;
-      if($traverse_intron>100)
-      {
-        die "Excess Traverse: min=$localmin_intron\tmax=$localmax_intron\tcursor=$cursor_intron\tVPOS=$snp_start\tArrayCursor=$sortchromArray_intron[$cursor_intron]\t$sortchromArray_intron[$cursor_intron-1]\t$sortchromArray_intron[$cursor_intron+1]\n";
-      }
-    } # end until
+    func1(intron,sortchromArray_intron,tempArray_intron,cursor_intron);
     if($intronOption == 1)
     {
       if(($snp_start >= $sortchromArray_intron[$cursor_intron]) && ($snp_start<$sortchromArray_intron[$cursor_intron] + $exonbuffer) || ($snp_start <= $chr_intron{"$snp_chr"._."$sortchromArray_intron[$cursor_intron]"} + 1) && ($snp_start > $chr_intron{"$snp_chr"._."$sortchromArray_intron[$cursor_intron]"} + 1 - $exonbuffer) && ($sortchromArray_intron[$cursor_intron] ne "NA") && ($chr_intron{"$snp_chr"._."$sortchromArray_intron[$cursor_intron]"} ne "NA"))
@@ -209,184 +194,32 @@ while(my $line = <SNPFILE>)
       }
     }
 
-    open(EXONFILEUTR5, "$exonfile.utr5");
-    while(my $lineutr5 = <EXONFILEUTR5>)
-    {
-      chomp($lineutr5);
-      my @lineutr5_array = split(/\t/, $lineutr5);
-      if($snp_chr eq $lineutr5_array[0])
-      {
-        for($j_utr5=1; $j_utr5<($#lineutr5_array + 1); $j_utr5++)
-        {
-          push @tempArray_utr5, $lineutr5_array[$j_utr5];
-        }
-      }
-    }
-    close(EXONFILEUTR5);
-    #utr5start is 0-based, and utr5end is 0-based
-    my @sortchromArray_utr5 = @tempArray_utr5;
-    $length_utr5=scalar(@sortchromArray_utr5);
-    $cursor_utr5=$length_utr5/2;
-    $localmin_utr5=0;
-    $localmax_utr5=$length_utr5;
-    $traverse_utr5=0;
-    until(($localmax_utr5-$localmin_utr5)<=1)
-    {
-      #print "cursor=|$cursor|\n";
-      if($snp_start <= $sortchromArray_utr5[$cursor_utr5])
-      {
-        $localmax_utr5=floor($cursor_utr5);
-        &left_utr5($cursor_utr5, $localmin_utr5);
-      }
-      if($snp_start >= $sortchromArray_utr5[$cursor_utr5])
-      {
-        $localmin_utr5=floor($cursor_utr5);
-        &right_utr5($cursor_utr5, $localmax_utr5);
-      }
-      $traverse_utr5++;
-      if($traverse_utr5>100)
-      {
-        die "Excess Traverse: min=$localmin_utr5\tmax=$localmax_utr5\tcursor=$cursor_utr5\tVPOS=$snp_start\tArrayCursor=$sortchromArray_utr5[$cursor_utr5]\t$sortchromArray_utr5[$cursor_utr5-1]\t$sortchromArray_utr5[$cursor_utr5+1]\n";
-      }
-    } # end until
+    # utr5start is 0-based, and utr5end is 0-based
+    func1(utr5,sortchromArray_utr5,tempArray_utr5,cursor_utr5);
     if(($snp_start > $sortchromArray_utr5[$cursor_utr5]) && ($snp_start<=$chr_utr5{"$snp_chr"._."$sortchromArray_utr5[$cursor_utr5]"} + 1) && ($sortchromArray_utr5[$cursor_utr5] ne "NA") && ($chr_utr5{"$snp_chr"._."$sortchromArray_utr5[$cursor_utr5]"} ne "NA"))
     {
       print OUTFILE1 $line, "\t", "UTR5HIT", "\t", $gene_utr5{"$snp_chr"._."$sortchromArray_utr5[$cursor_utr5]"}, "\n";
       $utr5Count++;
     }
 
-    open(EXONFILEUPSTREAM, "$exonfile.upstream");
-    while(my $lineupstream = <EXONFILEUPSTREAM>)
-    {
-      chomp($lineupstream);
-      my @lineupstream_array = split(/\t/, $lineupstream);
-      if($snp_chr eq $lineupstream_array[0])
-      {
-        for($j_upstream=1; $j_upstream<($#lineupstream_array + 1); $j_upstream++)
-        {
-          push @tempArray_upstream, $lineupstream_array[$j_upstream];
-        }
-      }
-    }
-    close(EXONFILEUPSTREAM);
-    #upstreamstart is 0-based, and upstreamend is 0-based
-    my @sortchromArray_upstream = @tempArray_upstream;
-    $length_upstream=scalar(@sortchromArray_upstream);
-    $cursor_upstream=$length_upstream/2;
-    $localmin_upstream=0;
-    $localmax_upstream=$length_upstream;
-    $traverse_upstream=0;
-    until(($localmax_upstream-$localmin_upstream)<=1)
-    {
-      #print "cursor=|$cursor|\n";
-      if($snp_start <= $sortchromArray_upstream[$cursor_upstream])
-      {
-        $localmax_upstream=floor($cursor_upstream);
-        &left_upstream($cursor_upstream, $localmin_upstream);
-      }
-      if($snp_start >= $sortchromArray_upstream[$cursor_upstream])
-      {
-        $localmin_upstream=floor($cursor_upstream);
-        &right_upstream($cursor_upstream, $localmax_upstream);
-      }
-      $traverse_upstream++;
-      if($traverse_upstream>100)
-      {
-        die "Excess Traverse: min=$localmin_upstream\tmax=$localmax_upstream\tcursor=$cursor_upstream\tVPOS=$snp_start\tArrayCursor=$sortchromArray_upstream[$cursor_upstream]\t$sortchromArray_upstream[$cursor_upstream-1]\t$sortchromArray_upstream[$cursor_upstream+1]\n";
-      }
-    } # end until
+    # upstreamstart is 0-based, and upstreamend is 0-based
+    func1(upstream,sortchromArray_upstream,tempArray_upstream,cursor_upstream);
     if(($snp_start > $sortchromArray_upstream[$cursor_upstream]) && ($snp_start<=$chr_upstream{"$snp_chr"._."$sortchromArray_upstream[$cursor_upstream]"} + 1) && ($sortchromArray_upstream[$cursor_upstream] ne "NA") && ($chr_upstream{"$snp_chr"._."$sortchromArray_upstream[$cursor_upstream]"} ne "NA"))
     {
       print OUTFILE1 $line, "\t", "UPSTREAMHIT", "\t", $gene_upstream{"$snp_chr"._."$sortchromArray_upstream[$cursor_upstream]"}, "\n";
       $upstreamCount++;
     }
 
-    open(EXONFILEUTR3, "$exonfile.utr3");
-    while(my $lineutr3 = <EXONFILEUTR3>)
-    {
-      chomp($lineutr3);
-      my @lineutr3_array = split(/\t/, $lineutr3);
-      if($snp_chr eq $lineutr3_array[0])
-      {
-        for($j_utr3=1; $j_utr3<($#lineutr3_array + 1); $j_utr3++)
-        {
-          push @tempArray_utr3, $lineutr3_array[$j_utr3];
-        }
-      }
-    }
-    close(EXONFILEUTR3);
-    #utr3start is 1-based, and utr3end is 1-based
-    my @sortchromArray_utr3 = @tempArray_utr3;
-    $length_utr3=scalar(@sortchromArray_utr3);
-    $cursor_utr3=$length_utr3/2;
-    $localmin_utr3=0;
-    $localmax_utr3=$length_utr3;
-    $traverse_utr3=0;
-    until(($localmax_utr3-$localmin_utr3)<=1)
-    {
-      #print "cursor=|$cursor|\n";
-      if($snp_start <= $sortchromArray_utr3[$cursor_utr3])
-      {
-        $localmax_utr3=floor($cursor_utr3);
-        &left_utr3($cursor_utr3, $localmin_utr3);
-      }
-      if($snp_start >= $sortchromArray_utr3[$cursor_utr3])
-      {
-        $localmin_utr3=floor($cursor_utr3);
-        &right_utr3($cursor_utr3, $localmax_utr3);
-      }
-      $traverse_utr3++;
-      if($traverse_utr3>100)
-      {
-        die "Excess Traverse: min=$localmin_utr3\tmax=$localmax_utr3\tcursor=$cursor_utr3\tVPOS=$snp_start\tArrayCursor=$sortchromArray_utr3[$cursor_utr3]\t$sortchromArray_utr3[$cursor_utr3-1]\t$sortchromArray_utr3[$cursor_utr3+1]\n";
-      }
-    } # end until
+    # utr3start is 1-based, and utr3end is 1-based
+    func1(utr3,sortchromArray_utr3,tempArray_utr3,cursor_utr3);
     if(($snp_start >= $sortchromArray_utr3[$cursor_utr3]) && ($snp_start<=$chr_utr3{"$snp_chr"._."$sortchromArray_utr3[$cursor_utr3]"}) && ($sortchromArray_utr3[$cursor_utr3] ne "NA") && ($chr_utr3{"$snp_chr"._."$sortchromArray_utr3[$cursor_utr3]"} ne "NA"))
     {
       print OUTFILE1 $line, "\t", "UTR3HIT", "\t", $gene_utr3{"$snp_chr"._."$sortchromArray_utr3[$cursor_utr3]"}, "\n";
       $utr3Count++;
     }
 
-    open(EXONFILEDOWNSTREAM, "$exonfile.downstream");
-    while(my $linedownstream = <EXONFILEDOWNSTREAM>)
-    {
-      chomp($linedownstream);
-      my @linedownstream_array = split(/\t/, $linedownstream);
-      if($snp_chr eq $linedownstream_array[0])
-      {
-        for($j_downstream=1; $j_downstream<($#linedownstream_array + 1); $j_downstream++)
-        {
-          push @tempArray_downstream, $linedownstream_array[$j_downstream];
-        }
-      }
-    }
-    close(EXONFILEDOWNSTREAM);
-    #downstreamstart is 1-based, and downstreamend is 1-based
-    my @sortchromArray_downstream = @tempArray_downstream;
-    $length_downstream=scalar(@sortchromArray_downstream);
-    $cursor_downstream=$length_downstream/2;
-    $localmin_downstream=0;
-    $localmax_downstream=$length_downstream;
-    $traverse_downstream=0;
-    until(($localmax_downstream-$localmin_downstream)<=1)
-    {
-      #print "cursor=|$cursor|\n";
-      if($snp_start <= $sortchromArray_downstream[$cursor_downstream])
-      {
-        $localmax_downstream=floor($cursor_downstream);
-        &left_downstream($cursor_downstream, $localmin_downstream);
-      }
-      if($snp_start >= $sortchromArray_downstream[$cursor_downstream])
-      {
-        $localmin_downstream=floor($cursor_downstream);
-        &right_downstream($cursor_downstream, $localmax_downstream);
-      }
-      $traverse_downstream++;
-      if($traverse_downstream>100)
-      {
-        die "Excess Traverse: min=$localmin_downstream\tmax=$localmax_downstream\tcursor=$cursor_downstream\tVPOS=$snp_start\tArrayCursor=$sortchromArray_downstream[$cursor_downstream]\t$sortchromArray_downstream[$cursor_downstream-1]\t$sortchromArray_downstream[$cursor_downstream+1]\n";
-      }
-    } # end until
+    # downstreamstart is 1-based, and downstreamend is 1-based
+    func1(downstream,sortchromArray_downstream,tempArray_downstream,cursor_downstream);
     if(($snp_start >= $sortchromArray_downstream[$cursor_downstream]) && ($snp_start<=$chr_downstream{"$snp_chr"._."$sortchromArray_downstream[$cursor_downstream]"}) && ($sortchromArray_downstream[$cursor_downstream] ne "NA") && ($chr_downstream{"$snp_chr"._."$sortchromArray_downstream[$cursor_downstream]"} ne "NA"))
     {
       print OUTFILE1 $line, "\t", "DOWNSTREAMHIT", "\t", $gene_downstream{"$snp_chr"._."$sortchromArray_downstream[$cursor_downstream]"}, "\n";
@@ -397,87 +230,3 @@ while(my $line = <SNPFILE>)
 }
 close SNPFILE;
 close(OUTFILE1);
-
-sub left_cds {
-    $cursor_cds = shift @_;
-    $localmin_cds = shift @_;
-    $cursor_cds = floor(($cursor_cds+$localmin_cds)/2);
-    return $cursor_cds;
-    }
-
-sub right_cds {
-    $cursor_cds = shift @_;
-    $localmax_cds = shift @_;
-    $cursor_cds = floor(($cursor_cds+$localmax_cds)/2);
-    return $cursor_cds;
-    }
-
-sub left_intron {
-    $cursor_intron = shift @_;
-    $localmin_intron = shift @_;
-    $cursor_intron = floor(($cursor_intron+$localmin_intron)/2);
-    return $cursor_intron;
-    }
-
-sub right_intron {
-    $cursor_intron = shift @_;
-    $localmax_intron = shift @_;
-    $cursor_intron = floor(($cursor_intron+$localmax_intron)/2);
-    return $cursor_intron;
-    }
-
-sub left_utr5 {
-    $cursor_utr5 = shift @_;
-    $localmin_utr5 = shift @_;
-    $cursor_utr5 = floor(($cursor_utr5+$localmin_utr5)/2);
-    return $cursor_utr5;
-    }
-
-sub right_utr5 {
-    $cursor_utr5 = shift @_;
-    $localmax_utr5 = shift @_;
-    $cursor_utr5 = floor(($cursor_utr5+$localmax_utr5)/2);
-    return $cursor_utr5;
-    }
-
-sub left_utr3 {
-    $cursor_utr3 = shift @_;
-    $localmin_utr3 = shift @_;
-    $cursor_utr3 = floor(($cursor_utr3+$localmin_utr3)/2);
-    return $cursor_utr3;
-    }
-
-sub right_utr3 {
-    $cursor_utr3 = shift @_;
-    $localmax_utr3 = shift @_;
-    $cursor_utr3 = floor(($cursor_utr3+$localmax_utr3)/2);
-    return $cursor_utr3;
-    }
-
-sub left_upstream {
-    $cursor_upstream = shift @_;
-    $localmin_upstream = shift @_;
-    $cursor_upstream = floor(($cursor_upstream+$localmin_upstream)/2);
-    return $cursor_upstream;
-    }
-
-sub right_upstream {
-    $cursor_upstream = shift @_;
-    $localmax_upstream = shift @_;
-    $cursor_upstream = floor(($cursor_upstream+$localmax_upstream)/2);
-    return $cursor_upstream;
-    }
-
-sub left_downstream {
-    $cursor_downstream = shift @_;
-    $localmin_downstream = shift @_;
-    $cursor_downstream = floor(($cursor_downstream+$localmin_downstream)/2);
-    return $cursor_downstream;
-    }
-
-sub right_downstream {
-    $cursor_downstream = shift @_;
-    $localmax_downstream = shift @_;
-    $cursor_downstream = floor(($cursor_downstream+$localmax_downstream)/2);
-    return $cursor_downstream;
-    }
