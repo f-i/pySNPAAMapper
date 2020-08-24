@@ -156,10 +156,10 @@ while(my $line = <SNPFILE>)
 
     # cdsstart is 0-based, and cdsend is 1-based
     func1(cds,sortchromArray_cds,tempArray_cds,cursor_cds);
+    print $sortchromArray_cds[$cursor_cds],"\n",$chr_cds{"$snp_chr"._."$sortchromArray_cds[$cursor_cds]"},"\n";
     if(($snp_start > $sortchromArray_cds[$cursor_cds]) && ($snp_start<=$chr_cds{"$snp_chr"._."$sortchromArray_cds[$cursor_cds]"}) && ($sortchromArray_cds[$cursor_cds] ne "NA") && ($chr_cds{"$snp_chr"._."$sortchromArray_cds[$cursor_cds]"} ne "NA"))
     {
       print OUTFILE1 $line, "\t", "CDSHIT", "\t", $gene_cds{"$snp_chr"._."$sortchromArray_cds[$cursor_cds]"}, "\n";
-      $cdsCount++;
     }
 
     # inronstart is 1-based, add intronhit buffer number for parse_discrepancy_jan_inronSeparate_final.perl because intronend is 0-based
@@ -182,7 +182,6 @@ while(my $line = <SNPFILE>)
           $direction = "left";
         }
         print OUTFILE1 $line, "\t", "INTRONHIT.$hitbuffer.$direction", "\t", $gene_intron{"$snp_chr"._."$sortchromArray_intron[$cursor_intron]"}, "\n";
-        $intronCount++;
       }
     }
     if($intronOption == -1)
@@ -190,7 +189,6 @@ while(my $line = <SNPFILE>)
       if(($snp_start >= $sortchromArray_intron[$cursor_intron]) && ($snp_start<=$chr_intron{"$snp_chr"._."$sortchromArray_intron[$cursor_intron]"} + 1) && ($sortchromArray_intron[$cursor_intron] ne "NA") && ($chr_intron{"$snp_chr"._."$sortchromArray_intron[$cursor_intron]"} ne "NA"))
       {
         print OUTFILE1 $line, "\t", "INTRONHIT", "\t", $gene_intron{"$snp_chr"._."$sortchromArray_intron[$cursor_intron]"}, "\n";
-        $intronCount++;
       }
     }
 
@@ -199,7 +197,6 @@ while(my $line = <SNPFILE>)
     if(($snp_start > $sortchromArray_utr5[$cursor_utr5]) && ($snp_start<=$chr_utr5{"$snp_chr"._."$sortchromArray_utr5[$cursor_utr5]"} + 1) && ($sortchromArray_utr5[$cursor_utr5] ne "NA") && ($chr_utr5{"$snp_chr"._."$sortchromArray_utr5[$cursor_utr5]"} ne "NA"))
     {
       print OUTFILE1 $line, "\t", "UTR5HIT", "\t", $gene_utr5{"$snp_chr"._."$sortchromArray_utr5[$cursor_utr5]"}, "\n";
-      $utr5Count++;
     }
 
     # upstreamstart is 0-based, and upstreamend is 0-based
@@ -207,7 +204,6 @@ while(my $line = <SNPFILE>)
     if(($snp_start > $sortchromArray_upstream[$cursor_upstream]) && ($snp_start<=$chr_upstream{"$snp_chr"._."$sortchromArray_upstream[$cursor_upstream]"} + 1) && ($sortchromArray_upstream[$cursor_upstream] ne "NA") && ($chr_upstream{"$snp_chr"._."$sortchromArray_upstream[$cursor_upstream]"} ne "NA"))
     {
       print OUTFILE1 $line, "\t", "UPSTREAMHIT", "\t", $gene_upstream{"$snp_chr"._."$sortchromArray_upstream[$cursor_upstream]"}, "\n";
-      $upstreamCount++;
     }
 
     # utr3start is 1-based, and utr3end is 1-based
@@ -215,7 +211,6 @@ while(my $line = <SNPFILE>)
     if(($snp_start >= $sortchromArray_utr3[$cursor_utr3]) && ($snp_start<=$chr_utr3{"$snp_chr"._."$sortchromArray_utr3[$cursor_utr3]"}) && ($sortchromArray_utr3[$cursor_utr3] ne "NA") && ($chr_utr3{"$snp_chr"._."$sortchromArray_utr3[$cursor_utr3]"} ne "NA"))
     {
       print OUTFILE1 $line, "\t", "UTR3HIT", "\t", $gene_utr3{"$snp_chr"._."$sortchromArray_utr3[$cursor_utr3]"}, "\n";
-      $utr3Count++;
     }
 
     # downstreamstart is 1-based, and downstreamend is 1-based
@@ -223,7 +218,6 @@ while(my $line = <SNPFILE>)
     if(($snp_start >= $sortchromArray_downstream[$cursor_downstream]) && ($snp_start<=$chr_downstream{"$snp_chr"._."$sortchromArray_downstream[$cursor_downstream]"}) && ($sortchromArray_downstream[$cursor_downstream] ne "NA") && ($chr_downstream{"$snp_chr"._."$sortchromArray_downstream[$cursor_downstream]"} ne "NA"))
     {
       print OUTFILE1 $line, "\t", "DOWNSTREAMHIT", "\t", $gene_downstream{"$snp_chr"._."$sortchromArray_downstream[$cursor_downstream]"}, "\n";
-      $downstreamCount++;
     }
     print "Done for the SNP $snp_chr-$snp_start\n";
   }
