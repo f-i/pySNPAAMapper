@@ -47,51 +47,35 @@ else
 
 #For each feature, make a hash for all unique start as key and end as value
 sub func0 {
-  my ($f, $f0, $f1) = @_;
-  open($f, "$f0");
-  while(<$f>)
+  my ($f, $f1) = @_;
+  open(EXONFILELINK, $f);
+  while(<EXONFILELINK>)
   {
     chomp;
     @exonline=split(/\t/,$_);
     ${$f1}{$exonline[0]} = $exonline[1];
   }
-  close $f;
+  close EXONFILELINK;
 }
 
-func0(EXONFILECDSLINK,$exonfile.cds_link_shrink,chr_cds);
-func0(EXONFILECDSGENE,$exonfile.cds_gene,gene_cds);
-func0(EXONFILEINTRONLINK,$exonfile.intron_link_shrink,chr_intron);
-func0(EXONFILEINTRONGENE,$exonfile.intron_gene,gene_intron);
-func0(EXONFILEUTR5LINK,$exonfile.utr5_link_shrink,chr_utr5);
-func0(EXONFILEUTR5GENE,$exonfile.utr5_gene,gene_utr5);
-func0(EXONFILEUTR3LINK,$exonfile.utr3_link_shrink,chr_utr3);
-func0(EXONFILEUTR3GENE,$exonfile.utr3_gene,gene_utr3);
-func0(EXONFILEUPSTREAMLINK,$exonfile.upstream_link_shrink,chr_upstream);
-func0(EXONFILEUPSTREAMGENE,$exonfile.upstream_gene,gene_upstream);
-func0(EXONFILEDOWNSTREAMLINK,$exonfile.downstream_link_shrink,chr_downstream);
-func0(EXONFILEDOWNSTREAMGENE,$exonfile.downstream_gene,gene_downstream);
+func0("$exonfile.cds_link_shrink",chr_cds);
+func0("$exonfile.cds_gene",gene_cds);
+func0("$exonfile.intron_link_shrink",chr_intron);
+func0("$exonfile.intron_gene",gene_intron);
+func0("$exonfile.utr5_link_shrink",chr_utr5);
+func0("$exonfile.utr5_gene",gene_utr5);
+func0("$exonfile.utr3_link_shrink",chr_utr3);
+func0("$exonfile.utr3_gene",gene_utr3);
+func0("$exonfile.upstream_link_shrink",chr_upstream);
+func0("$exonfile.upstream_gene",gene_upstream);
+func0("$exonfile.downstream_link_shrink",chr_downstream);
+func0("$exonfile.downstream_gene",gene_downstream);
 
 #map vcf variant back onto genome location and report the hit class
 open OUTFILE1, ">$snpfile.append";
 
-sub left {
-  my ($f,$f0) = @_;
-  ${$f} = shift @_;
-  ${$f0} = shift @_;
-  ${$f} = floor((${$f}+${$f0})/2);
-  return ${$f};
-  }
-
-sub right {
-  my ($f,$f0) = @_;
-  ${$f} = shift @_;
-  ${$f0} = shift @_;
-  ${$f} = floor((${$f}+${$f0})/2);
-  return ${$f};
-  }
-
 sub func1 {
-  my ($f,$f0,$f1,$f2,$f3,$f4) = @_;
+  my ($f,$f0,$f2) = @_;
   open(EXONFILE, "$exonfile.$f");
   while(my $line = <EXONFILE>)
   {
@@ -101,13 +85,11 @@ sub func1 {
     { #only store all of start postions in the array (without chromosome information included) for binary search
       for($j=1; $j<($#line_array + 1); $j++)
       {
-        push @{$f1}, $line_array[$j];
+        push @{$f0}, $line_array[$j];
       }
     }
   }
   close(EXONFILE);
-  #my @{$f0};
-  @{$f0} = @{$f1};
   $length=scalar(@{$f0});
   ${$f2}=$length/2;
   $localmin=0;
@@ -119,12 +101,12 @@ sub func1 {
     if($snp_start <= ${$f0}[${$f2}])
     {
       $localmax=floor(${$f2});
-      &left($f2, localmin);
+      ${$f2} = floor((${$f2}+$localmin)/2);
     }
     if($snp_start >= ${$f0}[${$f2}])
     {
       $localmin=floor(${$f2});
-      &right($f2, localmax);
+      ${$f2} = floor((${$f2}+$localmax)/2);
     }
     $traverse++;
     if($traverse>100)
@@ -137,12 +119,6 @@ sub func1 {
 open SNPFILE, "<$snpfile";
 while(my $line = <SNPFILE>)
 {
-  my @tempArray_cds;
-  my @tempArray_intron;
-  my @tempArray_utr5;
-  my @tempArray_utr3;
-  my @tempArray_upstream;
-  my @tempArray_downstream;
   chomp($line);
   if($line =~ m/^#/)
   {
@@ -155,15 +131,14 @@ while(my $line = <SNPFILE>)
     $snp_start = $snpline[1];
 
     # cdsstart is 0-based, and cdsend is 1-based
-    func1(cds,sortchromArray_cds,tempArray_cds,cursor_cds);
-    print $sortchromArray_cds[$cursor_cds],"\n",$chr_cds{"$snp_chr"._."$sortchromArray_cds[$cursor_cds]"},"\n";
+    func1(cds,sortchromArray_cds,cursor_cds);
     if(($snp_start > $sortchromArray_cds[$cursor_cds]) && ($snp_start<=$chr_cds{"$snp_chr"._."$sortchromArray_cds[$cursor_cds]"}) && ($sortchromArray_cds[$cursor_cds] ne "NA") && ($chr_cds{"$snp_chr"._."$sortchromArray_cds[$cursor_cds]"} ne "NA"))
     {
       print OUTFILE1 $line, "\t", "CDSHIT", "\t", $gene_cds{"$snp_chr"._."$sortchromArray_cds[$cursor_cds]"}, "\n";
     }
 
     # inronstart is 1-based, add intronhit buffer number for parse_discrepancy_jan_inronSeparate_final.perl because intronend is 0-based
-    func1(intron,sortchromArray_intron,tempArray_intron,cursor_intron);
+    func1(intron,sortchromArray_intron,cursor_intron);
     if($intronOption == 1)
     {
       if(($snp_start >= $sortchromArray_intron[$cursor_intron]) && ($snp_start<$sortchromArray_intron[$cursor_intron] + $exonbuffer) || ($snp_start <= $chr_intron{"$snp_chr"._."$sortchromArray_intron[$cursor_intron]"} + 1) && ($snp_start > $chr_intron{"$snp_chr"._."$sortchromArray_intron[$cursor_intron]"} + 1 - $exonbuffer) && ($sortchromArray_intron[$cursor_intron] ne "NA") && ($chr_intron{"$snp_chr"._."$sortchromArray_intron[$cursor_intron]"} ne "NA"))
@@ -193,28 +168,28 @@ while(my $line = <SNPFILE>)
     }
 
     # utr5start is 0-based, and utr5end is 0-based
-    func1(utr5,sortchromArray_utr5,tempArray_utr5,cursor_utr5);
+    func1(utr5,sortchromArray_utr5,cursor_utr5);
     if(($snp_start > $sortchromArray_utr5[$cursor_utr5]) && ($snp_start<=$chr_utr5{"$snp_chr"._."$sortchromArray_utr5[$cursor_utr5]"} + 1) && ($sortchromArray_utr5[$cursor_utr5] ne "NA") && ($chr_utr5{"$snp_chr"._."$sortchromArray_utr5[$cursor_utr5]"} ne "NA"))
     {
       print OUTFILE1 $line, "\t", "UTR5HIT", "\t", $gene_utr5{"$snp_chr"._."$sortchromArray_utr5[$cursor_utr5]"}, "\n";
     }
 
     # upstreamstart is 0-based, and upstreamend is 0-based
-    func1(upstream,sortchromArray_upstream,tempArray_upstream,cursor_upstream);
+    func1(upstream,sortchromArray_upstream,cursor_upstream);
     if(($snp_start > $sortchromArray_upstream[$cursor_upstream]) && ($snp_start<=$chr_upstream{"$snp_chr"._."$sortchromArray_upstream[$cursor_upstream]"} + 1) && ($sortchromArray_upstream[$cursor_upstream] ne "NA") && ($chr_upstream{"$snp_chr"._."$sortchromArray_upstream[$cursor_upstream]"} ne "NA"))
     {
       print OUTFILE1 $line, "\t", "UPSTREAMHIT", "\t", $gene_upstream{"$snp_chr"._."$sortchromArray_upstream[$cursor_upstream]"}, "\n";
     }
 
     # utr3start is 1-based, and utr3end is 1-based
-    func1(utr3,sortchromArray_utr3,tempArray_utr3,cursor_utr3);
+    func1(utr3,sortchromArray_utr3,cursor_utr3);
     if(($snp_start >= $sortchromArray_utr3[$cursor_utr3]) && ($snp_start<=$chr_utr3{"$snp_chr"._."$sortchromArray_utr3[$cursor_utr3]"}) && ($sortchromArray_utr3[$cursor_utr3] ne "NA") && ($chr_utr3{"$snp_chr"._."$sortchromArray_utr3[$cursor_utr3]"} ne "NA"))
     {
       print OUTFILE1 $line, "\t", "UTR3HIT", "\t", $gene_utr3{"$snp_chr"._."$sortchromArray_utr3[$cursor_utr3]"}, "\n";
     }
 
     # downstreamstart is 1-based, and downstreamend is 1-based
-    func1(downstream,sortchromArray_downstream,tempArray_downstream,cursor_downstream);
+    func1(downstream,sortchromArray_downstream,cursor_downstream);
     if(($snp_start >= $sortchromArray_downstream[$cursor_downstream]) && ($snp_start<=$chr_downstream{"$snp_chr"._."$sortchromArray_downstream[$cursor_downstream]"}) && ($sortchromArray_downstream[$cursor_downstream] ne "NA") && ($chr_downstream{"$snp_chr"._."$sortchromArray_downstream[$cursor_downstream]"} ne "NA"))
     {
       print OUTFILE1 $line, "\t", "DOWNSTREAMHIT", "\t", $gene_downstream{"$snp_chr"._."$sortchromArray_downstream[$cursor_downstream]"}, "\n";
