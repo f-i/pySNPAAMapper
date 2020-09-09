@@ -14,7 +14,7 @@ my $exonbuffer;
 
 my $intronOption;
 
-if(($#ARGV + 1)== 2)
+if(($#ARGV + 1) == 2)
 {
   ($exonfile,$snpfile) = @ARGV;
   print "The program assumes that you do NOT want to report how far the variant falls in the exon boundary.\n";
@@ -75,7 +75,7 @@ func0("$exonfile.downstream_gene",gene_downstream);
 open OUTFILE1, ">$snpfile.append";
 
 sub func1 {
-  my ($f,$f0,$f2) = @_;
+  my ($f,$f0,$f1) = @_;
   open(EXONFILE, "$exonfile.$f");
   while(my $line = <EXONFILE>)
   {
@@ -91,36 +91,36 @@ sub func1 {
   }
   close(EXONFILE);
   $length=scalar(@{$f0});
-  ${$f2}=$length/2;
+  ${$f1}=$length/2;
   $localmin=0;
   $localmax=$length;
   $traverse=0;
-  until(($localmax-$localmin)<=1)
+  until(($localmax-$localmin)<=1)  #binary search
   {
     #print "cursor=|$cursor|\n";
-    if($snp_start <= ${$f0}[${$f2}])
+    if($snp_start <= ${$f0}[${$f1}])
     {
-      $localmax=floor(${$f2});
-      ${$f2} = floor((${$f2}+$localmin)/2);
+      $localmax=floor(${$f1});  #floor function from the POSIX module, outputs the greatest integer less than or equal to input
+      ${$f1} = floor((${$f1}+$localmin)/2);
     }
-    if($snp_start >= ${$f0}[${$f2}])
+    if($snp_start >= ${$f0}[${$f1}])
     {
-      $localmin=floor(${$f2});
-      ${$f2} = floor((${$f2}+$localmax)/2);
+      $localmin=floor(${$f1});
+      ${$f1} = floor((${$f1}+$localmax)/2);
     }
     $traverse++;
     if($traverse>100)
     {
-      die "Excess Traverse: min=$localmin\tmax=$localmax\tcursor=${$f2}\tVPOS=$snp_start\tArrayCursor=${$f0}[${$f2}]\t${$f0}[${$f2}-1]\t${$f0}[${$f2}+1]\n";
+      die "Excess Traverse: min=$localmin\tmax=$localmax\tcursor=${$f1}\tVPOS=$snp_start\tArrayCursor=${$f0}[${$f1}]\t${$f0}[${$f1}-1]\t${$f0}[${$f1}+1]\n";
     }
-  } # end until
+  }  # end until
 }
 
 open SNPFILE, "<$snpfile";
 while(my $line = <SNPFILE>)
 {
   chomp($line);
-  if($line =~ m/^#/)
+  if($line =~ m/^#/)  #m means match; same if without letter m
   {
     next;
   }
@@ -137,7 +137,7 @@ while(my $line = <SNPFILE>)
       print OUTFILE1 $line, "\t", "CDSHIT", "\t", $gene_cds{"$snp_chr"._."$sortchromArray_cds[$cursor_cds]"}, "\n";
     }
 
-    # inronstart is 1-based, add intronhit buffer number for parse_discrepancy_jan_inronSeparate_final.perl because intronend is 0-based
+    # intronstart is 1-based, add intronhit buffer number for parse_discrepancy_jan_inronSeparate_final.perl because intronend is 0-based
     func1(intron,sortchromArray_intron,cursor_intron);
     if($intronOption == 1)
     {
@@ -145,8 +145,7 @@ while(my $line = <SNPFILE>)
       {
         my $hitbuffer;
         my $direction;
-        #12 -7 = 5 <6
-        if(($snp_start - $sortchromArray_intron[$cursor_intron]) < $exonbuffer)
+        if(($snp_start - $sortchromArray_intron[$cursor_intron]) < $exonbuffer)  #12 -7 = 5 <6
         {
           $hitbuffer = $snp_start - $sortchromArray_intron[$cursor_intron] + 1;
           $direction = "right";

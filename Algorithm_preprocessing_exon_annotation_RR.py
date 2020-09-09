@@ -19,10 +19,10 @@ def argsCheck(numArgs):
         print("\nPlease supply ONLY ONE file to parse.\n\nCorrect Syntax is:\n    python " + sys.argv[0] + " ChrAll_knownGene.txt.exons\n\nThe 4 output files will be the input file name with \".[strings]\" appended.\n")
         exit(1)  # Aborts program. (exit(1) indicates that an error occurred)
 
-def link(filename,who, a):
+def link(filename, who, a):
     '''filename is the name of input file as the only argument for running this
     script; who is a string from a list: 'cds', 'intron', 'utr5', 'utr3',
-    'upstream' and 'downstream'; a is a Pandas DataFrame read from filename '''
+    'upstream' and 'downstream'; a is a Pandas DataFrame read from filename'''
     start = who + 'Start'
     end = who + 'End'
     b = a[((a[start].notnull())|(a[end].notnull()))&(~a.chrom.str.contains('_'))]
