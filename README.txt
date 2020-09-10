@@ -29,11 +29,11 @@ or
  python Algorithm_preprocessing_exon_annotation_RR.py ChrAll_knownGene.txt.exons
 
 # Classify variants by regions (CDS, Upstream, Downstream, Intron, UTRs...)
-3) perl Algorithm_mapping_variants_reporting_class_intronLocation_updown.pl ChrAll_knownGene.txt.exons VCF_input_file_in_tab_delimited_format.txt
-(perl Algorithm_mapping_variants_reporting_class_intronLocation_updown.pl ChrAll_knownGene.txt.exons 007_crop.vcf)
+3) perl(/python) Algorithm_mapping_variants_reporting_class_intronLocation_updown.pl(/py) ChrAll_knownGene.txt.exons VCF_input_file_in_tab_delimited_format.txt
+(e.g. perl(/python) Algorithm_mapping_variants_reporting_class_intronLocation_updown.pl(/py) ChrAll_knownGene.txt.exons 007_crop.vcf)
 OR
-perl Algorithm_mapping_variants_reporting_class_intronLocation_updown.pl ChrAll_knownGene.txt.exons VCF_input_file_in_tab_delimited_format.txt IntronExon_boundary_in_bp
-(perl Algorithm_mapping_variants_reporting_class_intronLocation_updown.pl ChrAll_knownGene.txt.exons 007_crop.vcf 6)
+perl(/python) Algorithm_mapping_variants_reporting_class_intronLocation_updown.pl(/py) ChrAll_knownGene.txt.exons VCF_input_file_in_tab_delimited_format.txt IntronExon_boundary_in_bp
+(e.g. perl(/python) Algorithm_mapping_variants_reporting_class_intronLocation_updown.pl(/py) ChrAll_knownGene.txt.exons 007_crop.vcf 6)
 
 # Predict amino acid change type
 4) perl Algorithm_predicting_full_AA_change_samtools_updown.pl VCF_input_file_in_tab_delimited_format.txt.append kgXref.txt hg19_CDSIntronWithSign.txt.out ChrAll_knownGene.txt > VCF_input_file_in_tab_delimited_format.txt.out.txt
