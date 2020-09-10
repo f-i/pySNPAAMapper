@@ -3,17 +3,16 @@
 # Algorithm for predicting amino acid changes
 
 # USAGE:
-#    perl Algorithm_predicting_full_AA_change.pl VCF_input_file_in_tab_delimited_format.txt.append kgXref.txt hg19_CDSIntronWithSign.txt ChrAll_knownGene.txt > VCF_input_file_in_tab_delimited_format.txt.out.txt
+# perl Algorithm_predicting_full_AA_change.pl VCF_input_file_in_tab_delimited_format.txt.append kgXref.txt hg19_CDSIntronWithSign.txt ChrAll_knownGene.txt > VCF_input_file_in_tab_delimited_format.txt.out.txt
 
 my ($snpfile,$convertfile,$gene_outfile,$knowngenefile) = @ARGV;
 
 #some useful variables
 my $greater_than = ">";
 my $TRUE = 1;
-my $FALSE= -1;
+my $FALSE = -1;
 my $subline;
 my $flag = $FALSE;
-
 my $comma = ",";
 
 #This is the Codon and AA conversion hash
@@ -84,9 +83,7 @@ my %aa_hash = (
   TGA => '*',
 );
 
-
 #my $gene_outfile = "$genefile.out";
-
 
 #Hash kgXref.txt UCSC_ID->Gene_Symbol information
 my %geneHash=();
@@ -167,7 +164,6 @@ while(my $line0 = <INFILE0>)
   my @depth_array;
   my @alle_freq;
   my @read_category;
-
   my $hit_type;
   my $UCSC_ID;
 
@@ -201,15 +197,12 @@ while(my $line0 = <INFILE0>)
   }
 
   my $UCSC_ID_flag = $FALSE;
-
   my $strand;
   my $codon_change_string;
-
-  if ($hit_type eq "CDSHIT")
+  if($hit_type eq "CDSHIT")
   {
     print "\n============================\n", $line0, "\t", $geneHash{$UCSC_ID}, "\n";
     print "The possible ALT cases for this line are $case_counter\n";
-
     # if both ref and SNP calls are single "SNPs"
     if((length($ref_char) == 1) && ($SNP_file_flag eq $TRUE))
     {
@@ -220,15 +213,11 @@ while(my $line0 = <INFILE0>)
     {
       print OUTFILE_SNP substr ($snpfile, 0, index($snpfile, ".")), "\t", substr($line0_array[0],3), "\t", $line0_array[1], "\t", $geneHash{$UCSC_ID}, "\t", $UCSC_ID, "\t";
     }
-
     #to check how many ALT cases need to be gone through
     my $looper;
-
-    #if only one ALT case
-    if($case_counter == 1)
+    if($case_counter == 1)  #if only one ALT case
     {
       $looper = $case_counter;
-
       #my $strand;
       my $CDS_start;
       my $CDS_end;
@@ -241,16 +230,14 @@ while(my $line0 = <INFILE0>)
         {
           my @line2_array = split(/ /, $line2);
           my $UCSC_ID_check = substr($line2_array[0],16);
-          #if UCSC_ID is found in the CDSIntron file
-          if($UCSC_ID eq $UCSC_ID_check)
+          if($UCSC_ID eq $UCSC_ID_check)  #if UCSC_ID is found in the CDSIntron file
           {
             my @line22_array = split(/:/, $line2_array[1]);
             my @line22_arrayChr = split('=', $line22_array[0]);
             my @line222_array = split('-', $line22_array[1]);
             $CDS_start = $line222_array[0];
             $CDS_end = $line222_array[1];
-            #also their chromosomes are the same
-            if ($snp_chromosome eq $line22_arrayChr[1])
+            if ($snp_chromosome eq $line22_arrayChr[1])  #also their chromosomes are the same
             {
               if(($snp_location < $CDS_start) || ($snp_location > $CDS_end))
               {
@@ -259,14 +246,12 @@ while(my $line0 = <INFILE0>)
               }
               $strand = substr($line2_array[4],-1,1);
               $line_flag = $TRUE;
-              #newly inserted condition
-              $UCSC_ID_flag = $TRUE;
+              $UCSC_ID_flag = $TRUE;  #newly inserted condition
               next;
             }
           }
         }
-        #found CDS line
-        if($line_flag == $TRUE)
+        if($line_flag == $TRUE)  #found CDS line
         {
           my $CDS_line = $line2;
           my $line2_noIntron = remove_intron($line2);
@@ -279,8 +264,7 @@ while(my $line0 = <INFILE0>)
           {
             #print "CDS start location is $CDS_start\n";
             $coordinate = $snp_location - $CDS_start;
-            #count how many lower case nucleotides (NON-CDS or intron nucleotide) before SNP location and adjust its coordinate
-            $before_SNP_string = substr($line2, 0, $coordinate);
+            $before_SNP_string = substr($line2, 0, $coordinate);  #count how many lower case nucleotides (NON-CDS or intron nucleotide) before SNP location and adjust its coordinate
             $c_lower = $before_SNP_string =~ tr/a-z//;
             #print $snp_location, "\t", $CDS_start, "\t",$CDS_end, "\n";
             #print "Before replacement: ", substr($CDS_line, $coordinate, 1), "\n";
@@ -294,11 +278,10 @@ while(my $line0 = <INFILE0>)
             }
             #print "After replacement: ", substr($CDS_line, $coordinate, 1), "\n";
             else
-            {
-              #process new CDS string
+            { #process new CDS string
               $CDS_line_noIntron = remove_intron($CDS_line);
               #============== The last two parameters are just for print OUTFILE_SNP purpose
-              protein_translation($line2_noIntron, $CDS_line_noIntron, $coordinate - $c_lower, $protein_flag, $strand, $case_counter, $looper);
+              protein_translation($line2_noIntron,$CDS_line_noIntron,$coordinate-$c_lower,$protein_flag,$strand,$case_counter,$looper);
             }
             $line_flag = $FALSE;
             last;
@@ -328,17 +311,16 @@ while(my $line0 = <INFILE0>)
             #  {
             #    print "New CDS line\n";
             #    print $CDS_line, "\n";
-            #   print revdnacomp($ref_char), "\n";
+            #    print revdnacomp($ref_char), "\n";
             #    print $line2_noIntron, "\n";
-           #     print "============$replaced_snp_char==============\n";
-            #    print "bbbbbbbbbbbbbb\n";
+            #    print "============$replaced_snp_char==============\nbbbbbbbbbbbbbb\n";
               $CDS_line_noIntron = remove_intron($CDS_line);
             #    print $CDS_line_noIntron, "\n";
             #  }
               #process CDS sequece with intron removed sequence to identify SNP new coordinate for use later
               #print $strand, "\t", $snp_location, "\t", $snp_location_new, "\t", length($CDS_line_noIntron), "\n";
               #print $line0, "\t", $geneHash{$UCSC_ID}, "\n";
-              protein_translation($line2_noIntron, $CDS_line_noIntron, $coordinate - length($ref_char) + 1 - $c_lower, $protein_flag, $strand, $case_counter, $looper);
+              protein_translation($line2_noIntron,$CDS_line_noIntron,$coordinate-length($ref_char)+1-$c_lower,$protein_flag,$strand,$case_counter,$looper);
             }
             $line_flag = $FALSE;
             last;
@@ -350,127 +332,121 @@ while(my $line0 = <INFILE0>)
     else  #there are more than one possible ALT cases or $#snp_chars > 0
     {
       $looper = $case_counter;
-    # for each possible ALT case
-      for(my $case=0; $case<($#snp_chars + 1); $case++)
+      for(my $case=0; $case<($#snp_chars + 1); $case++)  # for each possible ALT case
       {
-
-      $snp_chars[$case] =~ tr/[a-z]/[A-Z]/;
-      print "\n--------------------------------------\n";
-      #my $strand;
-      my $CDS_start;
-      my $CDS_end;
-      my $line_flag = $FALSE;
-      open(INFILE2, "$gene_outfile");
-      while(my $line2 = <INFILE2>)
-      {
-        chomp($line2);
-        if($line2 =~ m/$greater_than/)
+        $snp_chars[$case] =~ tr/[a-z]/[A-Z]/;
+        print "\n--------------------------------------\n";
+        #my $strand;
+        my $CDS_start;
+        my $CDS_end;
+        my $line_flag = $FALSE;
+        open(INFILE2, "$gene_outfile");
+        while(my $line2 = <INFILE2>)
         {
-          my @line2_array = split(/ /, $line2);
-          my $UCSC_ID_check = substr($line2_array[0],16);
-          #if UCSC_ID is found in the CDSIntron file
-          if($UCSC_ID eq $UCSC_ID_check)
+          chomp($line2);
+          if($line2 =~ m/$greater_than/)
           {
-            my @line22_array = split(/:/, $line2_array[1]);
-            my @line22_arrayChr = split('=', $line22_array[0]);
-            my @line222_array = split('-', $line22_array[1]);
-            $CDS_start = $line222_array[0];
-            $CDS_end = $line222_array[1];
-            #also their chromosomes are the same
-            if ($snp_chromosome eq $line22_arrayChr[1])
+            my @line2_array = split(/ /, $line2);
+            my $UCSC_ID_check = substr($line2_array[0],16);
+            if($UCSC_ID eq $UCSC_ID_check)  #if UCSC_ID is found in the CDSIntron file
             {
-              if(($snp_location < $CDS_start) || ($snp_location > $CDS_end))
+              my @line22_array = split(/:/, $line2_array[1]);
+              my @line22_arrayChr = split('=', $line22_array[0]);
+              my @line222_array = split('-', $line22_array[1]);
+              $CDS_start = $line222_array[0];
+              $CDS_end = $line222_array[1];
+              if($snp_chromosome eq $line22_arrayChr[1])  #also their chromosomes are the same
               {
-                print "SNP location is outside of CDS region!!! No checking occurs!\n";
-                #exit(1);
+                if(($snp_location < $CDS_start) || ($snp_location > $CDS_end))
+                {
+                  print "SNP location is outside of CDS region!!! No checking occurs!\n";
+                  #exit(1);
+                }
+                $strand = substr($line2_array[4],-1,1);
+                $line_flag = $TRUE;
+                #newly inserted condition
+                $UCSC_ID_flag = $TRUE;
+                next;
               }
-              $strand = substr($line2_array[4],-1,1);
-              $line_flag = $TRUE;
-              #newly inserted condition
-              $UCSC_ID_flag = $TRUE;
-              next;
+            }
+          }
+          if($line_flag == $TRUE)  #found CDS line
+          {
+            my $CDS_line = $line2;
+            my $line2_noIntron = remove_intron($line2);
+            my $CDS_line_noIntron;
+            #print "\nThe length of CDS with intron for $UCSC_ID ($gene_name) is: ", length($CDS_line), "\n";
+            my $coordinate;
+            my $before_SNP_string;
+            my $c_lower;
+            #replace original char with SNP
+            if($strand eq "+")
+            {
+              #print "CDS start location is $CDS_start\n";
+              $coordinate = $snp_location - $CDS_start;
+              $before_SNP_string = substr($line2, 0, $coordinate);
+              $c_lower = $before_SNP_string =~ tr/a-z//;
+              #print $snp_location, "\t", $CDS_start, "\t",$CDS_end, "\n";
+              #print "Before replacement: ", substr($CDS_line, $coordinate, 1), "\n";
+              eval {substr($CDS_line, $coordinate, length($ref_char), $snp_chars[$case]) || die "This is not the right CDS length: $!";};
+              if($@)
+              {
+                #if($@ =~ m/substr outside of string/)
+                #{
+                print  "There is an error for checking $UCSC_ID ($gene_name): $@";
+                #}
+              }
+              #print "After replacement: ", substr($CDS_line, $coordinate, 1), "\n";
+              else
+              {
+                #process new CDS string
+                $CDS_line_noIntron = remove_intron($CDS_line);
+                #process CDS sequece with intron removed sequence to identify SNP new coordinate for use later
+                #print $strand, "\t", $snp_location, "\t", $snp_location_new, "\t", length($CDS_line_noIntron), "\n";
+                #print $line0, "\t", $geneHash{$UCSC_ID}, "\n";
+                $codon_change_string .= protein_translation($line2_noIntron, $CDS_line_noIntron, $coordinate - $c_lower, $protein_flag, $strand, $case_counter, $looper);
+              }
+              $line_flag = $FALSE;
+              last;
+            }
+            else
+            {
+              #print "CDS start location is $CDS_end\n";
+              $coordinate = $CDS_end - $snp_location;
+              my $replaced_snp_char = revdnacomp($snp_chars[$case]);
+              $replaced_snp_char =~ tr/[a-z]/[A-Z]/;
+              $before_SNP_string = substr($line2, 0, $coordinate);
+              $c_lower = $before_SNP_string =~ tr/a-z//;
+              #print $replaced_snp_char, "\n";
+              #print $snp_location, "\t", $CDS_start, "\t",$CDS_end, "\n";
+              #print "Before replacement: ", substr($CDS_line, $coordinate, 1), "\n";
+              eval {substr($CDS_line, $coordinate - length($ref_char) + 1, length($ref_char), $replaced_snp_char) || die "This is not the right CDS length: $!";};
+              if($@)
+              {
+                print  "There is an error for checking $UCSC_ID ($gene_name): $@";
+              }
+              #print "After replacement: ", substr($CDS_line, $coordinate, 1), "\n";
+              else
+              { #process new CDS string
+                $CDS_line_noIntron = remove_intron($CDS_line);
+                #process CDS sequece with intron removed sequence to identify SNP new coordinate for use later
+                #print $strand, "\t", $snp_location, "\t", $snp_location_new, "\t", length($CDS_line_noIntron), "\n";
+                #print $line0, "\t", $geneHash{$UCSC_ID}, "\n";
+                $codon_change_string .= protein_translation($line2_noIntron, $CDS_line_noIntron, $coordinate - length($ref_char) + 1 - $c_lower, $protein_flag, $strand, $case_counter, $looper);
+              }
+              $line_flag = $FALSE;
+              last;
             }
           }
         }
-        #found CDS line
-        if($line_flag == $TRUE)
-        {
-          my $CDS_line = $line2;
-          my $line2_noIntron = remove_intron($line2);
-          my $CDS_line_noIntron;
-          #print "\nThe length of CDS with intron for $UCSC_ID ($gene_name) is: ", length($CDS_line), "\n";
-          my $coordinate;
-          my $before_SNP_string;
-          my $c_lower;
-          #replace original char with SNP
-          if($strand eq "+")
-          {
-            #print "CDS start location is $CDS_start\n";
-            $coordinate = $snp_location - $CDS_start;
-            $before_SNP_string = substr($line2, 0, $coordinate);
-            $c_lower = $before_SNP_string =~ tr/a-z//;
-            #print $snp_location, "\t", $CDS_start, "\t",$CDS_end, "\n";
-            #print "Before replacement: ", substr($CDS_line, $coordinate, 1), "\n";
-            eval {substr($CDS_line, $coordinate, length($ref_char), $snp_chars[$case]) || die "This is not the right CDS length: $!";};
-            if($@)
-            {
-              #if($@ =~ m/substr outside of string/)
-              #{
-              print  "There is an error for checking $UCSC_ID ($gene_name): $@";
-              #}
-            }
-            #print "After replacement: ", substr($CDS_line, $coordinate, 1), "\n";
-            else
-            {
-              #process new CDS string
-              $CDS_line_noIntron = remove_intron($CDS_line);
-              #process CDS sequece with intron removed sequence to identify SNP new coordinate for use later
-              #print $strand, "\t", $snp_location, "\t", $snp_location_new, "\t", length($CDS_line_noIntron), "\n";
-              #print $line0, "\t", $geneHash{$UCSC_ID}, "\n";
-              $codon_change_string .= protein_translation($line2_noIntron, $CDS_line_noIntron, $coordinate - $c_lower, $protein_flag, $strand, $case_counter, $looper);
-            }
-            $line_flag = $FALSE;
-            last;
-          }
-          else
-          {
-            #print "CDS start location is $CDS_end\n";
-            $coordinate = $CDS_end - $snp_location;
-            my $replaced_snp_char = revdnacomp($snp_chars[$case]);
-            $replaced_snp_char =~ tr/[a-z]/[A-Z]/;
-            $before_SNP_string = substr($line2, 0, $coordinate);
-            $c_lower = $before_SNP_string =~ tr/a-z//;
-            #print $replaced_snp_char, "\n";
-            #print $snp_location, "\t", $CDS_start, "\t",$CDS_end, "\n";
-            #print "Before replacement: ", substr($CDS_line, $coordinate, 1), "\n";
-            eval {substr($CDS_line, $coordinate - length($ref_char) + 1, length($ref_char), $replaced_snp_char) || die "This is not the right CDS length: $!";};
-            if($@)
-            {
-              print  "There is an error for checking $UCSC_ID ($gene_name): $@";
-            }
-            #print "After replacement: ", substr($CDS_line, $coordinate, 1), "\n";
-            else
-            { #process new CDS string
-              $CDS_line_noIntron = remove_intron($CDS_line);
-              #process CDS sequece with intron removed sequence to identify SNP new coordinate for use later
-              #print $strand, "\t", $snp_location, "\t", $snp_location_new, "\t", length($CDS_line_noIntron), "\n";
-              #print $line0, "\t", $geneHash{$UCSC_ID}, "\n";
-              $codon_change_string .= protein_translation($line2_noIntron, $CDS_line_noIntron, $coordinate - length($ref_char) + 1 - $c_lower, $protein_flag, $strand, $case_counter, $looper);
-            }
-            $line_flag = $FALSE;
-            last;
-          }
-        }
-      }
-      close(INFILE2);
-      $looper--;
+        close(INFILE2);
+        $looper--;
       }#for each ALT case
     }#else
     if((length($ref_char) == 1) && ($SNP_file_flag eq $TRUE)) #single SNP case
     {
       @depth_array = split("=", $info_array[0]);
-      #for new samtools version 0.1.18
-      if($line0_array[7] =~ m/VDB/)
+      if($line0_array[7] =~ m/VDB/)  #for new samtools version 0.1.18
       {
         @alle_freq = split("=", $info_array[2]);
         @read_category = split("=", $info_array[4]);
@@ -492,8 +468,7 @@ while(my $line0 = <INFILE0>)
     else #indel case
     {
       @depth_array = split("=", $info_array[1]);
-      #for new samtools version 0.1.18
-      if($line0_array[7] =~ m/VDB/)
+      if($line0_array[7] =~ m/VDB/)  #for new samtools version 0.1.18
       {
         @alle_freq = split("=", $info_array[3]);
         @read_category = split("=", $info_array[5]);
@@ -505,7 +480,6 @@ while(my $line0 = <INFILE0>)
       }
       print OUTFILE_SNP $strand, "\t", "---", "\t", "INDEL", "\t", "---", "\t", "---", "\t", "---", "\t", "---", "\t"; 
       print OUTFILE_SNP $hit_type, "\t", $line0_array[2], "\t", $line0_array[3], "\t", $line0_array[4], "\t", $line0_array[5], "\t", $depth_array[1], "\t", $alle_freq[1], "\t", $read_category[1], "\t", $line0_array[7], "\n";
-
     }
     if($UCSC_ID_flag == $FALSE)
     {
@@ -513,17 +487,16 @@ while(my $line0 = <INFILE0>)
       #exit(1);
     }
   }#if CDSHIT
-  #elsif (($hit_type eq "INTRONHIT") || ($hit_type eq "UPSTREAMHIT") || ($hit_type eq "DOWNSTREAMHIT"))
+  #elsif(($hit_type eq "INTRONHIT") || ($hit_type eq "UPSTREAMHIT") || ($hit_type eq "DOWNSTREAMHIT"))
   #{
   #}
-  else #INTRON, UTR or UP-DOWNSTREAM cases
+  else  #INTRON, UTR or UP-DOWNSTREAM cases
   {
     if((length($ref_char) == 1) && ($SNP_file_flag eq $TRUE))
     {
       print OUTFILE_SNP substr ($snpfile, 0, index($snpfile, ".")), "\t", substr($line0_array[0],3), "\t", $line0_array[1], "\t", $geneHash{$UCSC_ID}, "\t", $UCSC_ID, "\t";
       @depth_array = split("=", $info_array[0]);
-      #for new samtools version 0.1.18
-      if($line0_array[7] =~ m/VDB/)
+      if($line0_array[7] =~ m/VDB/)  #for new samtools version 0.1.18
       {
         @alle_freq = split("=", $info_array[2]);
         @read_category = split("=", $info_array[4]);
@@ -540,8 +513,7 @@ while(my $line0 = <INFILE0>)
     {
       print OUTFILE_SNP substr ($snpfile, 0, index($snpfile, ".")), "\t", substr($line0_array[0],3), "\t", $line0_array[1], "\t", $geneHash{$UCSC_ID}, "\t", $UCSC_ID, "\t";
       @depth_array = split("=", $info_array[1]);
-      #for new samtools version 0.1.18
-      if($line0_array[7] =~ m/VDB/)
+      if($line0_array[7] =~ m/VDB/)  #for new samtools version 0.1.18
       {
         @alle_freq = split("=", $info_array[3]);
         @read_category = split("=", $info_array[5]);
@@ -570,22 +542,16 @@ close(OUTFILE_SNP);
 
 #### http://www.perlmonks.org/?node_id=197793
 sub revdnacomp {
-  # my $dna = @_;
-  # the above means $dna gets the number of
-  # arguments in @_, since it's a scalar context!
-
-  my $dna = shift; # or   my $dna = shift @_;
-  # ah, scalar context of scalar gives expected results.
-  # my ($dna) = @_; # would work, too
-
+  # my $dna = @_;  # $dna gets the number of arguments in @_, since it's a scalar context!
+  my $dna = shift;  # or  my $dna = shift @_; # ah, scalar context of scalar gives expected results.
+  # my ($dna) = @_;  # would work, too
   my $revcomp = reverse($dna);
   $revcomp =~ tr/ACGTacgt/TGCAtgca/;
   return $revcomp;
 }
 
 #function to remove intron using its lower case characterristics when download
-sub remove_intron
-{
+sub remove_intron {
   my ($full_line) = @_;
   $full_line =~ s/a//g;
   $full_line =~ s/c//g;
@@ -595,34 +561,26 @@ sub remove_intron
   return $full_line;
 }
 
-
 #function which does the AA translation
-
-sub protein_translation
-{
-  my($input_original_CDS_line,$input_CDS_line,$input_snp_location,$input_protein_flag,$input_strand,$input_case_counter,$input_looper) = @_;
+sub protein_translation {
+  my($input_original_CDS_line,$input_CDS_line,$input_snp_location,$input_protein_flag,$input_strand,$input_case_counter,$input_looper)=@_;
   #print "Adjusted SNP location started at:", $input_snp_location, "\n";
   #print "original CDS length: ", length($input_original_CDS_line), "\n";
   #print "replaced CDS length: ", length($input_CDS_line), "\n";
   my $input_codon_change_string;
-
   my $truncate_orignal_CDS_line;
   my $truncate_orignal_AA_line;
   my $checked_codon;
-  #translate CDS into AA sequence by moving 3 nt one time
-  for(my $i=0; $i<length($input_original_CDS_line); $i+=3)
+  for(my $i=0; $i<length($input_original_CDS_line); $i+=3)  #translate CDS into AA sequence by moving 3 nt one time
   { #get the codon for original sequence
     my $original_codon = substr($input_original_CDS_line, $i, 3);
-    #if this is the starting mutated codon location three nc ahead
-  #  if (($i - $input_snp_location) >= -3)
+  #  if (($i - $input_snp_location) >= -3)  # if this is the starting mutated codon location three nc ahead
   #  {
       #print $i, "\n";
       $truncate_orignal_CDS_line .= $original_codon;
       $truncate_orignal_AA_line .= $aa_hash{$original_codon};
-
   #  }
-    #if this is the codon position
-    if ((($input_snp_location - $i) >= 0) && (($input_snp_location - $i) <= 2) && ($input_protein_flag == $TRUE))
+    if((($input_snp_location-$i)>=0) && (($input_snp_location-$i)<=2) && ($input_protein_flag==$TRUE))  #if this is the codon position
     {
       if($input_case_counter == 1)
       {
@@ -630,8 +588,7 @@ sub protein_translation
         $checked_codon = $aa_hash{$original_codon};
       }
       else
-      {
-        #if this is the first case of ALT
+      { #if this is the first case of ALT
         if($input_looper == $input_case_counter)
         {
           print OUTFILE_SNP $input_strand, "\t", $i/3 + 1, "\t", "SNP", "\t", $aa_hash{$original_codon}, "(", $original_codon, ")";
@@ -645,24 +602,19 @@ sub protein_translation
       }
     }
   }#for
-
   #print "\n";
-
   my $truncate_CDS_line;
   my $truncate_AA_line;
-  #translate CDS into AA sequence by moving 3 nt one time
-  for(my $j=0; $j<length($input_CDS_line); $j+=3)
-  {
-    #get the codon for mutated sequence
+  for(my $j=0; $j<length($input_CDS_line); $j+=3)  #translate CDS into AA sequence by moving 3 nt one time
+  { #get the codon for mutated sequence
     my $codon = substr($input_CDS_line, $j, 3);
-    #if this is the starting mutated codon location
-  #  if (($j - $input_snp_location) >= -3)
+  #  if (($j - $input_snp_location) >= -3)  #if this is the starting mutated codon location
   #  {
       #print $j, "\n";
       $truncate_CDS_line .= $codon;
       $truncate_AA_line .= $aa_hash{$codon};
   #  }
-    if ((($input_snp_location - $j) >= 0) && (($input_snp_location - $j) <= 2) && ($input_protein_flag == $TRUE))
+    if((($input_snp_location-$j)>=0) && (($input_snp_location-$j)<=2) && ($input_protein_flag==$TRUE))
     {
       $SNP_codon_mutant = $codon;
       $SNP_aa_mutant = $aa_hash{$codon};
@@ -739,6 +691,5 @@ sub protein_translation
   #newly added for printing full length of AA
   print OUTFILE_SNP $truncate_orignal_AA_line, "\t";
   print OUTFILE_SNP $truncate_AA_line, "\t";
-
   return $input_codon_change_string;
 }#end sub
