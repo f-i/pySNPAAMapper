@@ -1,7 +1,9 @@
 #!/usr/bin/perl
 
 # Algorithm for predicting amino acid changes
-# USAGE: perl Algorithm_predicting_full_AA_change.pl VCF_input_file_in_tab_delimited_format.txt.append kgXref.txt hg19_CDSIntronWithSign.txt ChrAll_knownGene.txt > VCF_input_file_in_tab_delimited_format.txt.out.txt
+
+# USAGE:
+#    perl Algorithm_predicting_full_AA_change.pl VCF_input_file_in_tab_delimited_format.txt.append kgXref.txt hg19_CDSIntronWithSign.txt ChrAll_knownGene.txt > VCF_input_file_in_tab_delimited_format.txt.out.txt
 
 my ($snpfile,$convertfile,$gene_outfile,$knowngenefile) = @ARGV;
 
@@ -87,9 +89,9 @@ my %aa_hash = (
 
 
 #Hash kgXref.txt UCSC_ID->Gene_Symbol information
-my %geneHash =();
+my %geneHash=();
 open INFILEA, "$convertfile";
-while (my $lineA = <INFILEA>)
+while(my $lineA = <INFILEA>)
 {
   chomp($lineA);
   my @lineA_array = split('\t', $lineA);
@@ -98,9 +100,9 @@ while (my $lineA = <INFILEA>)
 close(INFILEA);
 
 #Hash kgXref.txt UCSC_ID->strand information
-my %strandHash =();
+my %strandHash=();
 open INFILEB, "$knowngenefile";
-while (my $lineB = <INFILEB>)
+while(my $lineB = <INFILEB>)
 {
   chomp($lineB);
   my @lineB_array = split('\t', $lineB);
@@ -116,10 +118,10 @@ open OUTFILE_SNP, ">$SNP_output";
 
 #print header info
 print OUTFILE_SNP "Sample", "\t", "Chromosome", "\t", "Variant Position", "\t", "Gene Symbol", "\t", "UCSC ID", "\t", "Strand", "\t", "AA Position of Mutation (for CDSHIT)", "\t", "Variant Type", "\t", "Amino Acid Ref (Codon) -> AA SNP (Codon)", "\t", "Variant Class", "\t", "Ref AA chain",  "\t", "Alt AA chain",  "\t", "Hit Type", "\t", "Known dbSNP", "\t", "Ref nt", "\t", "Alt nt", "\t", "Quality", "\t", "Depth", "\t", "Allele Freq", "\t", "Read Categories", "\t", "Info", "\n";
-   
+
 #read the SNP file
-open INFILE0, "$snpfile"; 
-while (my $line0 = <INFILE0>)
+open INFILE0, "$snpfile";
+while(my $line0 = <INFILE0>)
 {
   chomp($line0);
   #assume it is a SNP
@@ -128,11 +130,11 @@ while (my $line0 = <INFILE0>)
 
   my @line0_array = split(/\t/, $line0);
   my $snp_chromosome = $line0_array[0];
-  my $snp_location = $line0_array[1];  
+  my $snp_location = $line0_array[1];
   #we assume the ref has only one case
   my $ref_char = $line0_array[3];
   #force everything to upper case
-  $ref_char =~ tr/[a-z]/[A-Z]/; 
+  $ref_char =~ tr/[a-z]/[A-Z]/;
   my @snp_chars;
   my $snp_char;
   my $case_counter;
@@ -143,30 +145,28 @@ while (my $line0 = <INFILE0>)
     for(my $k=0; $k<($#snp_chars + 1); $k++)
     {
       if(length($snp_chars[$k]) > 1)
-      {
-        #this is not a single SNP
+      { #this is not a single SNP
         $SNP_file_flag = $FALSE;
         last;
-      } 
+      }
     }
   }
   else
   {
     $snp_char = $line0_array[4];
-    $snp_char =~ tr/[a-z]/[A-Z]/; 
+    $snp_char =~ tr/[a-z]/[A-Z]/;
     $case_counter = 1;
     if(length($snp_char) > 1)
-    {
-      #this is not a single SNP
+    { #this is not a single SNP
       $SNP_file_flag = $FALSE;
     }
   }
-    
+
   #get depth and ReadCategory info
   my @info_array = split(/\;/, $line0_array[7]);
   my @depth_array;
   my @alle_freq;
-  my @read_category; 
+  my @read_category;
 
   my $hit_type;
   my $UCSC_ID;
@@ -178,27 +178,27 @@ while (my $line0 = <INFILE0>)
     {
       $hit_type = $line0_array[12];
       $UCSC_ID = $line0_array[13];
-print "Three samples & new samtools...\n";
+      print "Three samples & new samtools...\n";
     }
     elsif(($#line0_array + 1) == 13) #two samples run from samtools
     {
       $hit_type = $line0_array[11];
       $UCSC_ID = $line0_array[12];
-print "Two samples & new samtools...\n";
+      print "Two samples & new samtools...\n";
     }
     elsif(($#line0_array + 1) == 12) #one sample run from samtools
     {
       $hit_type = $line0_array[10];
       $UCSC_ID = $line0_array[11];
-print "One sample & new samtools...\n";
+      print "One sample & new samtools...\n";
     }
   }
-  else 
+  else
   {
     $hit_type = $line0_array[10];
     $UCSC_ID = $line0_array[11];
-print "One sample & old samtools...\n";
-  } 
+    print "One sample & old samtools...\n";
+  }
 
   my $UCSC_ID_flag = $FALSE;
 
@@ -228,7 +228,7 @@ print "One sample & old samtools...\n";
     if($case_counter == 1)
     {
       $looper = $case_counter;
-   
+
       #my $strand;
       my $CDS_start;
       my $CDS_end;
@@ -247,9 +247,9 @@ print "One sample & old samtools...\n";
             my @line22_array = split(/:/, $line2_array[1]);
             my @line22_arrayChr = split('=', $line22_array[0]);
             my @line222_array = split('-', $line22_array[1]);
-            $CDS_start = $line222_array[0];  
+            $CDS_start = $line222_array[0];
             $CDS_end = $line222_array[1];
-            #also their chromosomes are the same 
+            #also their chromosomes are the same
             if ($snp_chromosome eq $line22_arrayChr[1])
             {
               if(($snp_location < $CDS_start) || ($snp_location > $CDS_end))
@@ -257,7 +257,7 @@ print "One sample & old samtools...\n";
                 print "SNP location is outside of CDS region!!! No checking occurs!\n";
                 #exit(1);
               }
-              $strand = substr($line2_array[4],-1,1);  
+              $strand = substr($line2_array[4],-1,1);
               $line_flag = $TRUE;
               #newly inserted condition
               $UCSC_ID_flag = $TRUE;
@@ -269,7 +269,7 @@ print "One sample & old samtools...\n";
         if($line_flag == $TRUE)
         {
           my $CDS_line = $line2;
-          my $line2_noIntron = remove_intron($line2); 
+          my $line2_noIntron = remove_intron($line2);
           my $CDS_line_noIntron;
           #print "\nThe length of CDS with intron for $UCSC_ID ($gene_name) is: ", length($CDS_line), "\n";
           my $coordinate;
@@ -295,8 +295,8 @@ print "One sample & old samtools...\n";
             #print "After replacement: ", substr($CDS_line, $coordinate, 1), "\n";
             else
             {
-              #process new CDS string 
-              $CDS_line_noIntron = remove_intron($CDS_line);      
+              #process new CDS string
+              $CDS_line_noIntron = remove_intron($CDS_line);
               #============== The last two parameters are just for print OUTFILE_SNP purpose
               protein_translation($line2_noIntron, $CDS_line_noIntron, $coordinate - $c_lower, $protein_flag, $strand, $case_counter, $looper);
             }
@@ -311,7 +311,7 @@ print "One sample & old samtools...\n";
             $replaced_snp_char =~ tr/[a-z]/[A-Z]/;
             $before_SNP_string = substr($line2, 0, $coordinate);
             $c_lower = $before_SNP_string =~ tr/a-z//;
-            #print $replaced_snp_char, "\n";   
+            #print $replaced_snp_char, "\n";
             #print $snp_location, "\t", $CDS_start, "\t",$CDS_end, "\n";
             #print "Before replacement: ", substr($CDS_line, $coordinate, 1), "\n";
             ## need to go further back to the length of ref_char to replace it since it it on the reverse strand
@@ -322,18 +322,17 @@ print "One sample & old samtools...\n";
             }
             #print "After replacement: ", substr($CDS_line, $coordinate, 1), "\n";
             else
-            {
-              #process new CDS string        
+            { #process new CDS string
             #  print $UCSC_ID, "\n";
             #  if ($UCSC_ID eq 'uc001wja.2')
             #  {
             #    print "New CDS line\n";
             #    print $CDS_line, "\n";
-            #   print revdnacomp($ref_char), "\n";   
+            #   print revdnacomp($ref_char), "\n";
             #    print $line2_noIntron, "\n";
-           #     print "============$replaced_snp_char==============\n";   
+           #     print "============$replaced_snp_char==============\n";
             #    print "bbbbbbbbbbbbbb\n";
-              $CDS_line_noIntron = remove_intron($CDS_line);       
+              $CDS_line_noIntron = remove_intron($CDS_line);
             #    print $CDS_line_noIntron, "\n";
             #  }
               #process CDS sequece with intron removed sequence to identify SNP new coordinate for use later
@@ -375,9 +374,9 @@ print "One sample & old samtools...\n";
             my @line22_array = split(/:/, $line2_array[1]);
             my @line22_arrayChr = split('=', $line22_array[0]);
             my @line222_array = split('-', $line22_array[1]);
-            $CDS_start = $line222_array[0];  
+            $CDS_start = $line222_array[0];
             $CDS_end = $line222_array[1];
-            #also their chromosomes are the same 
+            #also their chromosomes are the same
             if ($snp_chromosome eq $line22_arrayChr[1])
             {
               if(($snp_location < $CDS_start) || ($snp_location > $CDS_end))
@@ -385,7 +384,7 @@ print "One sample & old samtools...\n";
                 print "SNP location is outside of CDS region!!! No checking occurs!\n";
                 #exit(1);
               }
-              $strand = substr($line2_array[4],-1,1);  
+              $strand = substr($line2_array[4],-1,1);
               $line_flag = $TRUE;
               #newly inserted condition
               $UCSC_ID_flag = $TRUE;
@@ -397,7 +396,7 @@ print "One sample & old samtools...\n";
         if($line_flag == $TRUE)
         {
           my $CDS_line = $line2;
-          my $line2_noIntron = remove_intron($line2); 
+          my $line2_noIntron = remove_intron($line2);
           my $CDS_line_noIntron;
           #print "\nThe length of CDS with intron for $UCSC_ID ($gene_name) is: ", length($CDS_line), "\n";
           my $coordinate;
@@ -423,8 +422,8 @@ print "One sample & old samtools...\n";
             #print "After replacement: ", substr($CDS_line, $coordinate, 1), "\n";
             else
             {
-              #process new CDS string 
-              $CDS_line_noIntron = remove_intron($CDS_line);      
+              #process new CDS string
+              $CDS_line_noIntron = remove_intron($CDS_line);
               #process CDS sequece with intron removed sequence to identify SNP new coordinate for use later
               #print $strand, "\t", $snp_location, "\t", $snp_location_new, "\t", length($CDS_line_noIntron), "\n";
               #print $line0, "\t", $geneHash{$UCSC_ID}, "\n";
@@ -441,7 +440,7 @@ print "One sample & old samtools...\n";
             $replaced_snp_char =~ tr/[a-z]/[A-Z]/;
             $before_SNP_string = substr($line2, 0, $coordinate);
             $c_lower = $before_SNP_string =~ tr/a-z//;
-            #print $replaced_snp_char, "\n";   
+            #print $replaced_snp_char, "\n";
             #print $snp_location, "\t", $CDS_start, "\t",$CDS_end, "\n";
             #print "Before replacement: ", substr($CDS_line, $coordinate, 1), "\n";
             eval {substr($CDS_line, $coordinate - length($ref_char) + 1, length($ref_char), $replaced_snp_char) || die "This is not the right CDS length: $!";};
@@ -451,9 +450,8 @@ print "One sample & old samtools...\n";
             }
             #print "After replacement: ", substr($CDS_line, $coordinate, 1), "\n";
             else
-            {
-              #process new CDS string        
-              $CDS_line_noIntron = remove_intron($CDS_line);       
+            { #process new CDS string
+              $CDS_line_noIntron = remove_intron($CDS_line);
               #process CDS sequece with intron removed sequence to identify SNP new coordinate for use later
               #print $strand, "\t", $snp_location, "\t", $snp_location_new, "\t", length($CDS_line_noIntron), "\n";
               #print $line0, "\t", $geneHash{$UCSC_ID}, "\n";
@@ -471,42 +469,42 @@ print "One sample & old samtools...\n";
     if((length($ref_char) == 1) && ($SNP_file_flag eq $TRUE)) #single SNP case
     {
       @depth_array = split("=", $info_array[0]);
-      #for new samtools version 0.1.18	
+      #for new samtools version 0.1.18
       if($line0_array[7] =~ m/VDB/)
-      {	
+      {
         @alle_freq = split("=", $info_array[2]);
         @read_category = split("=", $info_array[4]);
       }
-      else #for old samtools version 0.1.12	
-      {	
+      else #for old samtools version 0.1.12
+      {
         @alle_freq = split("=", $info_array[1]);
         @read_category = split("=", $info_array[3]);
       }
       if(length($codon_change_string) == 0) #if there is no ALT case
       {
-        print OUTFILE_SNP  $hit_type, "\t", $line0_array[2], "\t", $line0_array[3], "\t", $line0_array[4], "\t", $line0_array[5], "\t", $depth_array[1], "\t", $alle_freq[1], "\t", $read_category[1], "\t", $line0_array[7], "\n"; 
+        print OUTFILE_SNP  $hit_type, "\t", $line0_array[2], "\t", $line0_array[3], "\t", $line0_array[4], "\t", $line0_array[5], "\t", $depth_array[1], "\t", $alle_freq[1], "\t", $read_category[1], "\t", $line0_array[7], "\n";
       }
       else
       {
-        print OUTFILE_SNP  $codon_change_string, "\t", $hit_type, "\t", $line0_array[2], "\t", $line0_array[3], "\t", $line0_array[4], "\t", $line0_array[5], "\t", $depth_array[1], "\t", $alle_freq[1], "\t", $read_category[1], "\t", $line0_array[7], "\n"; 
+        print OUTFILE_SNP  $codon_change_string, "\t", $hit_type, "\t", $line0_array[2], "\t", $line0_array[3], "\t", $line0_array[4], "\t", $line0_array[5], "\t", $depth_array[1], "\t", $alle_freq[1], "\t", $read_category[1], "\t", $line0_array[7], "\n";
       }
     }
     else #indel case
-    { 
+    {
       @depth_array = split("=", $info_array[1]);
-      #for new samtools version 0.1.18	
+      #for new samtools version 0.1.18
       if($line0_array[7] =~ m/VDB/)
-      {	
+      {
         @alle_freq = split("=", $info_array[3]);
         @read_category = split("=", $info_array[5]);
       }
-      else #for old samtools version 0.1.12	
-      {	
+      else #for old samtools version 0.1.12
+      {
         @alle_freq = split("=", $info_array[2]);
         @read_category = split("=", $info_array[4]);
       }
       print OUTFILE_SNP $strand, "\t", "---", "\t", "INDEL", "\t", "---", "\t", "---", "\t", "---", "\t", "---", "\t"; 
-      print OUTFILE_SNP $hit_type, "\t", $line0_array[2], "\t", $line0_array[3], "\t", $line0_array[4], "\t", $line0_array[5], "\t", $depth_array[1], "\t", $alle_freq[1], "\t", $read_category[1], "\t", $line0_array[7], "\n"; 
+      print OUTFILE_SNP $hit_type, "\t", $line0_array[2], "\t", $line0_array[3], "\t", $line0_array[4], "\t", $line0_array[5], "\t", $depth_array[1], "\t", $alle_freq[1], "\t", $read_category[1], "\t", $line0_array[7], "\n";
 
     }
     if($UCSC_ID_flag == $FALSE)
@@ -522,39 +520,39 @@ print "One sample & old samtools...\n";
   {
     if((length($ref_char) == 1) && ($SNP_file_flag eq $TRUE))
     {
-      print OUTFILE_SNP substr ($snpfile, 0, index($snpfile, ".")), "\t", substr($line0_array[0],3), "\t", $line0_array[1], "\t", $geneHash{$UCSC_ID}, "\t", $UCSC_ID, "\t"; 
+      print OUTFILE_SNP substr ($snpfile, 0, index($snpfile, ".")), "\t", substr($line0_array[0],3), "\t", $line0_array[1], "\t", $geneHash{$UCSC_ID}, "\t", $UCSC_ID, "\t";
       @depth_array = split("=", $info_array[0]);
-      #for new samtools version 0.1.18	
+      #for new samtools version 0.1.18
       if($line0_array[7] =~ m/VDB/)
-      {	
+      {
         @alle_freq = split("=", $info_array[2]);
         @read_category = split("=", $info_array[4]);
       }
-      else #for old samtools version 0.1.12	
-      {	
+      else #for old samtools version 0.1.12
+      {
         @alle_freq = split("=", $info_array[1]);
         @read_category = split("=", $info_array[3]);
       }
-      print OUTFILE_SNP $strandHash{$UCSC_ID}, "\t", "---", "\t", "SNP", "\t", "---", "\t", "---", "\t", "---", "\t", "---", "\t"; 
-      print OUTFILE_SNP $hit_type, "\t", $line0_array[2], "\t", $line0_array[3], "\t", $line0_array[4], "\t", $line0_array[5], "\t", $depth_array[1], "\t", $alle_freq[1], "\t", $read_category[1], "\t", $line0_array[7], "\n"; 
+      print OUTFILE_SNP $strandHash{$UCSC_ID}, "\t", "---", "\t", "SNP", "\t", "---", "\t", "---", "\t", "---", "\t", "---", "\t";
+      print OUTFILE_SNP $hit_type, "\t", $line0_array[2], "\t", $line0_array[3], "\t", $line0_array[4], "\t", $line0_array[5], "\t", $depth_array[1], "\t", $alle_freq[1], "\t", $read_category[1], "\t", $line0_array[7], "\n";
     }
     else #at least ref OR SNP calls are NOT a single "SNP"
     {
       print OUTFILE_SNP substr ($snpfile, 0, index($snpfile, ".")), "\t", substr($line0_array[0],3), "\t", $line0_array[1], "\t", $geneHash{$UCSC_ID}, "\t", $UCSC_ID, "\t";
       @depth_array = split("=", $info_array[1]);
-      #for new samtools version 0.1.18	
+      #for new samtools version 0.1.18
       if($line0_array[7] =~ m/VDB/)
-      {	
+      {
         @alle_freq = split("=", $info_array[3]);
         @read_category = split("=", $info_array[5]);
       }
-      else #for old samtools version 0.1.12	
-      {	
+      else #for old samtools version 0.1.12
+      {
         @alle_freq = split("=", $info_array[2]);
         @read_category = split("=", $info_array[4]);
       }
-      print OUTFILE_SNP $strandHash{$UCSC_ID}, "\t", "---", "\t", "INDEL", "\t", "---", "\t", "---", "\t", "---", "\t", "---", "\t"; 
-      print OUTFILE_SNP $hit_type, "\t", $line0_array[2], "\t", $line0_array[3], "\t", $line0_array[4], "\t", $line0_array[5], "\t", $depth_array[1], "\t", $alle_freq[1], "\t", $read_category[1], "\t", $line0_array[7], "\n"; 
+      print OUTFILE_SNP $strandHash{$UCSC_ID}, "\t", "---", "\t", "INDEL", "\t", "---", "\t", "---", "\t", "---", "\t", "---", "\t";
+      print OUTFILE_SNP $hit_type, "\t", $line0_array[2], "\t", $line0_array[3], "\t", $line0_array[4], "\t", $line0_array[5], "\t", $depth_array[1], "\t", $alle_freq[1], "\t", $read_category[1], "\t", $line0_array[7], "\n";
     }
   }
 }
@@ -572,8 +570,8 @@ close(OUTFILE_SNP);
 
 #### http://www.perlmonks.org/?node_id=197793
 sub revdnacomp {
-  # my $dna = @_;  
-  # the above means $dna gets the number of 
+  # my $dna = @_;
+  # the above means $dna gets the number of
   # arguments in @_, since it's a scalar context!
 
   my $dna = shift; # or   my $dna = shift @_;
@@ -584,7 +582,6 @@ sub revdnacomp {
   $revcomp =~ tr/ACGTacgt/TGCAtgca/;
   return $revcomp;
 }
-  
 
 #function to remove intron using its lower case characterristics when download
 sub remove_intron
@@ -614,8 +611,7 @@ sub protein_translation
   my $checked_codon;
   #translate CDS into AA sequence by moving 3 nt one time
   for(my $i=0; $i<length($input_original_CDS_line); $i+=3)
-  {
-    #get the codon for original sequence
+  { #get the codon for original sequence
     my $original_codon = substr($input_original_CDS_line, $i, 3);
     #if this is the starting mutated codon location three nc ahead
   #  if (($i - $input_snp_location) >= -3)
@@ -623,7 +619,7 @@ sub protein_translation
       #print $i, "\n";
       $truncate_orignal_CDS_line .= $original_codon;
       $truncate_orignal_AA_line .= $aa_hash{$original_codon};
-  
+
   #  }
     #if this is the codon position
     if ((($input_snp_location - $i) >= 0) && (($input_snp_location - $i) <= 2) && ($input_protein_flag == $TRUE))
@@ -649,7 +645,7 @@ sub protein_translation
       }
     }
   }#for
-  
+
   #print "\n";
 
   my $truncate_CDS_line;
@@ -659,13 +655,12 @@ sub protein_translation
   {
     #get the codon for mutated sequence
     my $codon = substr($input_CDS_line, $j, 3);
-    #if this is the starting mutated codon location 
+    #if this is the starting mutated codon location
   #  if (($j - $input_snp_location) >= -3)
   #  {
       #print $j, "\n";
       $truncate_CDS_line .= $codon;
       $truncate_AA_line .= $aa_hash{$codon};
-  
   #  }
     if ((($input_snp_location - $j) >= 0) && (($input_snp_location - $j) <= 2) && ($input_protein_flag == $TRUE))
     {
@@ -684,15 +679,14 @@ sub protein_translation
           {
             print OUTFILE_SNP "NSN", "\t";
           }
-          else 
+          else
           {
             print OUTFILE_SNP "NSM", "\t";
           }
         }
       }
       else
-      {
-        #if this is the other case of ALT
+      { #if this is the other case of ALT
         if($input_looper > 1)
         {
           print OUTFILE_SNP "->", $aa_hash{$codon}, "(", $codon, ")", "$comma";
@@ -700,7 +694,6 @@ sub protein_translation
           {
             $input_codon_change_string .= "SYN";
             $input_codon_change_string .= $comma;
-
           }
           else
           {
@@ -709,7 +702,7 @@ sub protein_translation
               $input_codon_change_string .= "NSN";
               $input_codon_change_string .= $comma;
             }
-            else 
+            else
             {
               $input_codon_change_string .= "NSM";
               $input_codon_change_string .= $comma;
@@ -729,7 +722,7 @@ sub protein_translation
             {
               $input_codon_change_string .= "NSN";
             }
-            else 
+            else
             {
               $input_codon_change_string .= "NSM";
             }
@@ -746,7 +739,6 @@ sub protein_translation
   #newly added for printing full length of AA
   print OUTFILE_SNP $truncate_orignal_AA_line, "\t";
   print OUTFILE_SNP $truncate_AA_line, "\t";
-  
+
   return $input_codon_change_string;
 }#end sub
-
