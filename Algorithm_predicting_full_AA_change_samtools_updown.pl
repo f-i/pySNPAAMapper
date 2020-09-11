@@ -14,75 +14,15 @@ my $FALSE = -1;
 my $subline;
 my $flag = $FALSE;
 my $comma = ",";
-
 #This is the Codon and AA conversion hash
-my %aa_hash = (
-  ATG => 'M',
-  TGG => 'W',
-  TTT => 'F',
-  TTC => 'F',
-  TAT => 'Y',
-  TAC => 'Y',
-  TGT => 'C',
-  TGC => 'C',
-  CAT => 'H',
-  CAC => 'H',
-  CAA => 'Q',
-  CAG => 'Q',
-  AAT => 'N',
-  AAC => 'N',
-  AAA => 'K',
-  AAG => 'K',
-  GAT => 'D',
-  GAC => 'D',
-  GAA => 'E',
-  GAG => 'E',
-  ATT => 'I',
-  ATC => 'I',
-  ATA => 'I',
-  CCT => 'P',
-  CCC => 'P',
-  CCA => 'P',
-  CCG => 'P',
-  ACT => 'T',
-  ACC => 'T',
-  ACA => 'T',
-  ACG => 'T',
-  GTT => 'V',
-  GTC => 'V',
-  GTA => 'V',
-  GTG => 'V',
-  GCT => 'A',
-  GCC => 'A',
-  GCA => 'A',
-  GCG => 'A',
-  GGT => 'G',
-  GGC => 'G',
-  GGA => 'G',
-  GGG => 'G',
-  TCT => 'S',
-  TCC => 'S',
-  TCA => 'S',
-  TCG => 'S',
-  AGT => 'S',
-  AGC => 'S',
-  TTA => 'L',
-  TTG => 'L',
-  CTT => 'L',
-  CTC => 'L',
-  CTA => 'L',
-  CTG => 'L',
-  CGT => 'R',
-  CGC => 'R',
-  CGA => 'R',
-  CGG => 'R',
-  AGA => 'R',
-  AGG => 'R',
-  TAG => '*',
-  TAA => '*',
-  TGA => '*',
-);
-
+my %aa_hash=(ATG=>'M',TGG=>'W',TTT=>'F',TTC=>'F',TAT=>'Y',TAC=>'Y',TGT=>'C',TGC=>'C',
+  CAT=>'H',CAC=>'H',CAA=>'Q',CAG=>'Q',AAT=>'N',AAC=>'N',AAA=>'K',AAG=>'K',GAT=>'D',
+  GAC=>'D',GAA=>'E',GAG=>'E',ATT=>'I',ATC=>'I',ATA=>'I',CCT=>'P',CCC=>'P',CCA=>'P',
+  CCG=>'P',ACT=>'T',ACC=>'T',ACA=>'T',ACG=>'T',GTT=>'V',GTC=>'V',GTA=>'V',GTG=>'V',
+  GCT=>'A',GCC=>'A',GCA=>'A',GCG=>'A',GGT=>'G',GGC=>'G',GGA=>'G',GGG=>'G',TCT=>'S',
+  TCC=>'S',TCA=>'S',TCG=>'S',AGT=>'S',AGC=>'S',TTA=>'L',TTG=>'L',CTT=>'L',CTC=>'L',
+  CTA=>'L',CTG=>'L',CGT=>'R',CGC=>'R',CGA=>'R',CGG=>'R',AGA=>'R',AGG=>'R',TAG=>'*',
+  TAA=>'*',TGA=>'*',);
 #my $gene_outfile = "$genefile.out";
 
 #Hash kgXref.txt UCSC_ID->Gene_Symbol information
@@ -124,14 +64,11 @@ while(my $line0 = <INFILE0>)
   #assume it is a SNP
   my $SNP_file_flag = $TRUE;
   my $protein_flag = $FALSE;
-
   my @line0_array = split(/\t/, $line0);
   my $snp_chromosome = $line0_array[0];
   my $snp_location = $line0_array[1];
-  #we assume the ref has only one case
-  my $ref_char = $line0_array[3];
-  #force everything to upper case
-  $ref_char =~ tr/[a-z]/[A-Z]/;
+  my $ref_char = $line0_array[3];  #we assume the ref has only one case
+  $ref_char =~ tr/[a-z]/[A-Z]/;  #force everything to upper case
   my @snp_chars;
   my $snp_char;
   my $case_counter;
@@ -167,8 +104,7 @@ while(my $line0 = <INFILE0>)
   my $hit_type;
   my $UCSC_ID;
 
-  #for new samtools version 0.1.18
-  if($line0_array[7] =~ m/VDB/)
+  if($line0_array[7] =~ m/VDB/)  #for new samtools version 0.1.18
   {
     if(($#line0_array + 1) == 14) #three samples run from samtools
     {
@@ -203,8 +139,7 @@ while(my $line0 = <INFILE0>)
   {
     print "\n============================\n", $line0, "\t", $geneHash{$UCSC_ID}, "\n";
     print "The possible ALT cases for this line are $case_counter\n";
-    # if both ref and SNP calls are single "SNPs"
-    if((length($ref_char) == 1) && ($SNP_file_flag eq $TRUE))
+    if((length($ref_char) == 1) && ($SNP_file_flag eq $TRUE))  # if both ref and SNP calls are single "SNPs"
     {
       $protein_flag = $TRUE;
       print OUTFILE_SNP substr ($snpfile, 0, index($snpfile, ".")), "\t", substr($line0_array[0],3), "\t", $line0_array[1], "\t", $geneHash{$UCSC_ID}, "\t", $UCSC_ID, "\t"; 
@@ -298,7 +233,7 @@ while(my $line0 = <INFILE0>)
             #print $snp_location, "\t", $CDS_start, "\t",$CDS_end, "\n";
             #print "Before replacement: ", substr($CDS_line, $coordinate, 1), "\n";
             ## need to go further back to the length of ref_char to replace it since it it on the reverse strand
-            eval {substr($CDS_line, $coordinate - length($ref_char) + 1, length($ref_char), $replaced_snp_char) || die "This is not the right CDS length: $!";};
+            eval {substr($CDS_line,$coordinate-length($ref_char)+1,length($ref_char),$replaced_snp_char) || die "This is not the right CDS length: $!";};
             if($@)
             {
               print  "There is an error for checking $UCSC_ID ($gene_name): $@";
@@ -364,8 +299,7 @@ while(my $line0 = <INFILE0>)
                 }
                 $strand = substr($line2_array[4],-1,1);
                 $line_flag = $TRUE;
-                #newly inserted condition
-                $UCSC_ID_flag = $TRUE;
+                $UCSC_ID_flag = $TRUE;  #newly inserted condition
                 next;
               }
             }
@@ -398,13 +332,12 @@ while(my $line0 = <INFILE0>)
               }
               #print "After replacement: ", substr($CDS_line, $coordinate, 1), "\n";
               else
-              {
-                #process new CDS string
+              { #process new CDS string
                 $CDS_line_noIntron = remove_intron($CDS_line);
                 #process CDS sequece with intron removed sequence to identify SNP new coordinate for use later
                 #print $strand, "\t", $snp_location, "\t", $snp_location_new, "\t", length($CDS_line_noIntron), "\n";
                 #print $line0, "\t", $geneHash{$UCSC_ID}, "\n";
-                $codon_change_string .= protein_translation($line2_noIntron, $CDS_line_noIntron, $coordinate - $c_lower, $protein_flag, $strand, $case_counter, $looper);
+                $codon_change_string .= protein_translation($line2_noIntron,$CDS_line_noIntron,$coordinate-$c_lower,$protein_flag,$strand,$case_counter,$looper);
               }
               $line_flag = $FALSE;
               last;
