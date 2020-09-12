@@ -176,7 +176,7 @@ while(my $line = <INFILE0>)
             my @line222_array = split('-', $line22_array[1]);
             $CDS_start = $line222_array[0];
             $CDS_end = $line222_array[1];
-            if ($snp_chromosome eq $line22_arrayChr[1])  #also their chromosomes are the same
+            if($snp_chromosome eq $line22_arrayChr[1])  #also their chromosomes are the same
             {
               if(($snp_location < $CDS_start) || ($snp_location > $CDS_end))
               {
@@ -195,7 +195,7 @@ while(my $line = <INFILE0>)
           my $CDS_line = $line2;
           my $line2_noIntron = remove_intron($line2);
           my $CDS_line_noIntron;
-          #print "\nThe length of CDS with intron for $UCSC_ID ($gene_name) is: ", length($CDS_line), "\n";
+          #print "\nThe length of CDS with intron for $UCSC_ID ($gene_name) is: ",length($CDS_line),"\n";
           my $coordinate;
           my $before_SNP_string;
           my $c_lower;
@@ -208,12 +208,9 @@ while(my $line = <INFILE0>)
             #print $snp_location, "\t", $CDS_start, "\t",$CDS_end, "\n";
             #print "Before replacement: ",substr($CDS_line,$coordinate,1),"\n";
             eval {substr($CDS_line,$coordinate,length($ref_char),$snp_char) || die "This is not the right CDS length: $!";};
-            if($@)
+            if($@)  #if($@ =~ m/substr outside of string/)
             {
-              #if($@ =~ m/substr outside of string/)
-              #{
               print "There is an error for checking $UCSC_ID ($gene_name): $@";
-              #}
             }
             #print "After replacement: ",substr($CDS_line,$coordinate,1),"\n";
             else
@@ -245,7 +242,7 @@ while(my $line = <INFILE0>)
             else
             { #process new CDS string
             #  print $UCSC_ID, "\n";
-            #  if ($UCSC_ID eq 'uc001wja.2')
+            #  if($UCSC_ID eq 'uc001wja.2')
             #  {
             #    print "New CDS line\n",$CDS_line,"\n",revdnacomp($ref_char),"\n",$line2_noIntron,"\n";
             #    print "============$replaced_snp_char==============\nbbbbbbbbbbbbbb\n";

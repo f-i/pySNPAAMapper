@@ -38,6 +38,7 @@ perl(/python) Algorithm_mapping_variants_reporting_class_intronLocation_updown.p
 # Predict amino acid change type
 4) perl Algorithm_predicting_full_AA_change_samtools_updown.pl VCF_input_file_in_tab_delimited_format.txt.append kgXref.txt hg19_CDSIntronWithSign.txt.out ChrAll_knownGene.txt > VCF_input_file_in_tab_delimited_format.txt.out.txt
 (perl Algorithm_predicting_full_AA_change_samtools_updown.pl 007_crop.vcf.append kgXref.txt hg19_CDSIntronWithSign.txt.out ChrAll_knownGene.txt >007_crop.vcf.out.txt)
+Note: File hg19_CDSIntronWithSign.txt.out is 2797.95 MB; this exceeds GitHub's file size limit of 100.00 MB. So it cannot be uploaded here into this repository. Please download hg19_CDSIntronWithSign.txt.out in "Source Code" from this url link: http://isu.indstate.edu/ybai2/SNPAAMapper2/index.html
 
 # Prioritize mutation effects
 5) perl Algorithm_prioritizing_mutation_headerTop_updown.pl VCF_input_file_in_tab_delimited_format.txt.append.out.txt
