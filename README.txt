@@ -69,3 +69,6 @@ UTR3End UTR5End
 downstreamStart upstreamStart
 downstreamEnd upstreamEnd
 down_flank up_flank
+
+Single nucleotide polymorphisms, frequently called SNPs (pronounced “snips”),
+are the most common type of genetic variation among people.
