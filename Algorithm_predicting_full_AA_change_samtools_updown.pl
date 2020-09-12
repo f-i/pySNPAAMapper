@@ -47,6 +47,21 @@ open OUTFILE_SNP, ">$SNP_output";
 #print header info
 print OUTFILE_SNP "Sample","\t","Chromosome","\t","Variant Position","\t","Gene Symbol","\t","UCSC ID","\t","Strand","\t","AA Position of Mutation (for CDSHIT)","\t","Variant Type","\t","Amino Acid Ref (Codon) -> AA SNP (Codon)","\t","Variant Class","\t","Ref AA chain","\t","Alt AA chain","\t","Hit Type","\t","Known dbSNP","\t","Ref nt","\t","Alt nt","\t","Quality","\t","Depth","\t","Allele Freq","\t","Read Categories","\t","Info","\n";
 
+sub func0 {
+  my ($i1, $i2, $i3, $i4, $i5) = @_;
+  @depth_array = split("=", $info_array[$i1]);
+  if($line_array[7] =~ m/VDB/)  #for new samtools version 0.1.18
+  {
+    @alle_freq = split("=", $info_array[$i2]);
+    @read_category = split("=", $info_array[$i3]);
+  }
+  else #for old samtools version 0.1.12
+  {
+    @alle_freq = split("=", $info_array[$i4]);
+    @read_category = split("=", $info_array[$i5]);
+  }
+}
+
 #read the SNP file
 open INFILE0, "$snpfile";
 while(my $line = <INFILE0>)
@@ -307,20 +322,17 @@ while(my $line = <INFILE0>)
               $c_lower = $before_SNP_string =~ tr/a-z//;
               #print $snp_location,"\t",$CDS_start,"\t",$CDS_end,"\n","Before replacement: ",substr($CDS_line,$coordinate,1),"\n";
               eval {substr($CDS_line,$coordinate,length($ref_char),$snp_chars[$case]) || die "This is not the right CDS length: $!";};
-              if($@)
+              if($@)  #if($@ =~ m/substr outside of string/)
               {
-                #if($@ =~ m/substr outside of string/)
-                #{
                 print "There is an error for checking $UCSC_ID ($gene_name): $@";
-                #}
               }
               #print "After replacement: ",substr($CDS_line,$coordinate,1),"\n";
               else
               { #process new CDS string
                 $CDS_line_noIntron = remove_intron($CDS_line);
                 #process CDS sequece with intron removed sequence to identify SNP new coordinate for use later
-                #print $strand, "\t", $snp_location, "\t", $snp_location_new, "\t", length($CDS_line_noIntron), "\n";
-                #print $line, "\t", $geneHash{$UCSC_ID}, "\n";
+                #print $strand,"\t",$snp_location,"\t",$snp_location_new,"\t",length($CDS_line_noIntron),"\n";
+                #print $line,"\t",$geneHash{$UCSC_ID},"\n";
                 $codon_change_string .= protein_translation($line2_noIntron,$CDS_line_noIntron,$coordinate-$c_lower,$protein_flag,$strand,$case_counter,$looper);
               }
               $line_flag = -1;
@@ -346,7 +358,7 @@ while(my $line = <INFILE0>)
               { #process new CDS string
                 $CDS_line_noIntron = remove_intron($CDS_line);
                 #process CDS sequece with intron removed sequence to identify SNP new coordinate for use later
-                #print $strand, "\t", $snp_location, "\t", $snp_location_new, "\t", length($CDS_line_noIntron), "\n";
+                #print $strand,"\t",$snp_location,"\t",$snp_location_new,"\t",length($CDS_line_noIntron),"\n";
                 #print $line, "\t", $geneHash{$UCSC_ID}, "\n";
                 $codon_change_string .= protein_translation($line2_noIntron,$CDS_line_noIntron,$coordinate-length($ref_char)+1-$c_lower,$protein_flag,$strand,$case_counter,$looper);
               }
@@ -361,17 +373,7 @@ while(my $line = <INFILE0>)
     }#else
     if((length($ref_char) == 1) && ($SNP_file_flag eq 1)) #single SNP case
     {
-      @depth_array = split("=", $info_array[0]);
-      if($line_array[7] =~ m/VDB/)  #for new samtools version 0.1.18
-      {
-        @alle_freq = split("=", $info_array[2]);
-        @read_category = split("=", $info_array[4]);
-      }
-      else #for old samtools version 0.1.12
-      {
-        @alle_freq = split("=", $info_array[1]);
-        @read_category = split("=", $info_array[3]);
-      }
+      func0(0,2,4,1,3);
       if(length($codon_change_string) == 0) #if there is no ALT case
       {
         print OUTFILE_SNP $hit_type,"\t",$line_array[2],"\t",$line_array[3],"\t",$line_array[4],"\t",$line_array[5],"\t",$depth_array[1],"\t",$alle_freq[1],"\t",$read_category[1],"\t",$line_array[7],"\n";
@@ -383,17 +385,7 @@ while(my $line = <INFILE0>)
     }
     else #indel case
     {
-      @depth_array = split("=", $info_array[1]);
-      if($line_array[7] =~ m/VDB/)  #for new samtools version 0.1.18
-      {
-        @alle_freq = split("=", $info_array[3]);
-        @read_category = split("=", $info_array[5]);
-      }
-      else #for old samtools version 0.1.12
-      {
-        @alle_freq = split("=", $info_array[2]);
-        @read_category = split("=", $info_array[4]);
-      }
+      func0(1,3,5,2,4);
       print OUTFILE_SNP $strand,"\t","---","\t","INDEL","\t","---","\t","---","\t","---","\t","---","\t"; 
       print OUTFILE_SNP $hit_type,"\t",$line_array[2],"\t",$line_array[3],"\t",$line_array[4],"\t",$line_array[5],"\t",$depth_array[1],"\t",$alle_freq[1],"\t",$read_category[1],"\t",$line_array[7],"\n";
     }
@@ -411,32 +403,12 @@ while(my $line = <INFILE0>)
     print OUTFILE_SNP substr($snpfile,0,index($snpfile,".")),"\t",substr($line_array[0],3),"\t",$line_array[1],"\t",$geneHash{$UCSC_ID},"\t",$UCSC_ID,"\t";
     if((length($ref_char) == 1) && ($SNP_file_flag eq 1))
     {
-      @depth_array = split("=", $info_array[0]);
-      if($line_array[7] =~ m/VDB/)  #for new samtools version 0.1.18
-      {
-        @alle_freq = split("=", $info_array[2]);
-        @read_category = split("=", $info_array[4]);
-      }
-      else #for old samtools version 0.1.12
-      {
-        @alle_freq = split("=", $info_array[1]);
-        @read_category = split("=", $info_array[3]);
-      }
+      func0(0,2,4,1,3);
       print OUTFILE_SNP $strandHash{$UCSC_ID},"\t","---","\t","SNP","\t","---","\t","---","\t","---","\t","---","\t";
     }
     else #at least ref OR SNP calls are NOT a single "SNP"
     {
-      @depth_array = split("=", $info_array[1]);
-      if($line_array[7] =~ m/VDB/)  #for new samtools version 0.1.18
-      {
-        @alle_freq = split("=", $info_array[3]);
-        @read_category = split("=", $info_array[5]);
-      }
-      else #for old samtools version 0.1.12
-      {
-        @alle_freq = split("=", $info_array[2]);
-        @read_category = split("=", $info_array[4]);
-      }
+      func0(1,3,5,2,4);
       print OUTFILE_SNP $strandHash{$UCSC_ID},"\t","---","\t","INDEL","\t","---","\t","---","\t","---","\t","---","\t";
     }
     print OUTFILE_SNP $hit_type,"\t",$line_array[2],"\t",$line_array[3],"\t",$line_array[4],"\t",$line_array[5],"\t",$depth_array[1],"\t",$alle_freq[1],"\t",$read_category[1],"\t",$line_array[7],"\n";
