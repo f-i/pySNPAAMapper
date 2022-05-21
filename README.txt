@@ -29,15 +29,15 @@ or
  python Algorithm_preprocessing_exon_annotation_RR.py ChrAll_knownGene.txt.exons
 
 # Classify variants by regions (CDS, Upstream, Downstream, Intron, UTRs...)
-3) perl(/python) Algorithm_mapping_variants_reporting_class_intronLocation_updown.pl(/py) ChrAll_knownGene.txt.exons VCF_input_file_in_tab_delimited_format.txt
-(e.g. perl(/python) Algorithm_mapping_variants_reporting_class_intronLocation_updown.pl(/py) ChrAll_knownGene.txt.exons 007_crop.vcf)
+3) perl(/python) Algorithm_mapping_variants_reporting_class_intronLocation_updown.pl(/.py) ChrAll_knownGene.txt.exons VCF_input_file_in_tab_delimited_format.txt
+(e.g. perl(/python) Algorithm_mapping_variants_reporting_class_intronLocation_updown.pl(/.py) ChrAll_knownGene.txt.exons 007_crop.vcf)
 OR
-perl(/python) Algorithm_mapping_variants_reporting_class_intronLocation_updown.pl(/py) ChrAll_knownGene.txt.exons VCF_input_file_in_tab_delimited_format.txt IntronExon_boundary_in_bp
-(e.g. perl(/python) Algorithm_mapping_variants_reporting_class_intronLocation_updown.pl(/py) ChrAll_knownGene.txt.exons 007_crop.vcf 6)
+perl(/python) Algorithm_mapping_variants_reporting_class_intronLocation_updown.pl(/.py) ChrAll_knownGene.txt.exons VCF_input_file_in_tab_delimited_format.txt IntronExon_boundary_in_bp
+(e.g. perl(/python) Algorithm_mapping_variants_reporting_class_intronLocation_updown.pl(/.py) ChrAll_knownGene.txt.exons 007_crop.vcf 6)
 
 # Predict amino acid change type
-4) perl Algorithm_predicting_full_AA_change_samtools_updown.pl VCF_input_file_in_tab_delimited_format.txt.append kgXref.txt hg19_CDSIntronWithSign.txt.out ChrAll_knownGene.txt > VCF_input_file_in_tab_delimited_format.txt.out.txt
-(perl Algorithm_predicting_full_AA_change_samtools_updown.pl 007_crop.vcf.append kgXref.txt hg19_CDSIntronWithSign.txt.out ChrAll_knownGene.txt >007_crop.vcf.out.txt)
+4) perl(/python) Algorithm_predicting_full_AA_change_samtools_updown.pl(/.py) VCF_input_file_in_tab_delimited_format.txt.append kgXref.txt hg19_CDSIntronWithSign.txt.out ChrAll_knownGene.txt > VCF_input_file_in_tab_delimited_format.txt.out.txt
+(e.g. perl(/python) Algorithm_predicting_full_AA_change_samtools_updown.pl(/.py) 007_crop.vcf.append kgXref.txt hg19_CDSIntronWithSign.txt.out ChrAll_knownGene.txt > 007_crop.vcf.out.txt)
 Note: File hg19_CDSIntronWithSign.txt.out is 2797.95 MB; this exceeds GitHub's file size limit of 100.00 MB. So it cannot be uploaded here into this repository. Please download hg19_CDSIntronWithSign.txt.out in "Source Code" from this url link: http://isu.indstate.edu/ybai2/SNPAAMapper2/index.html
 
 # Prioritize mutation effects
@@ -73,3 +73,6 @@ down_flank up_flank
 
 Single nucleotide polymorphisms, frequently called SNPs (pronounced “snips”),
 are the most common type of genetic variation among people.
+
+CDS (coding sequence), the coding region of a gene, is the portion of a gene's
+DNA or RNA that codes for protein.
