@@ -6,20 +6,20 @@
 
 ## Important bug fixes:
 
-a7dd5803d9165380fa3cf68c3997083056ed12f6 (Commit on Aug 19, 2020)
+https://github.com/f-i/pySNPAAMapper/commit/a7dd5803d9165380fa3cf68c3997083056ed12f6 (Commit on Aug 19, 2020)
 
 
 
 ########################################
-Authors: Bai, Y & J. Cavalcoli
-SNPAAMapper Version 2.0 (Copyright 2013)
-Python Translator: Chenjian Fu
+- Authors: Bai, Y & J. Cavalcoli
+- SNPAAMapper Version 2.0 (Copyright 2013)
+- Python Translator: Chenjian Fu
 ########################################
 
-Program descriptions:
+## Program descriptions:
 SNPAAMapper is a downstream variant annotation program that can effectively classify variants by region (e.g. exon, intron, etc), predict amino acid change type (e.g. synonymous, non-synonymous mutation, etc), and prioritize mutation effects (e.g. CDS versus 5’UTR, etc).
 
-Major features:
+## Major features:
 a) The pipeline accepts the VCF input file in tab-delimited format and processes the vcf input file containing all cases (G5, lowFreq, and novel)
 b) The variant mapping step has the option of letting users select whether they want to report the bp distance between each identified intron variant and its nearby exon
 c) The pipeline can deal with VCF files called by different SAMTools versions (0.1.18 and older ones) and also offers flexibility in dealing with vcf input files generated using SAMTools with two or three samples
