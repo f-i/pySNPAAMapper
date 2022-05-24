@@ -4,6 +4,12 @@ This project has 2 goals:
 
 2. Translate all the Perl scripts into Python (3.6 or higher).
 
+Important bug fixes:
+
+a7dd5803d9165380fa3cf68c3997083056ed12f6 (Commit on Aug 19, 2020)
+
+
+
 ########################################
 Authors: Bai, Y & J. Cavalcoli
 SNPAAMapper Version 2.0 (Copyright 2013)
@@ -20,9 +26,8 @@ c) The pipeline can deal with VCF files called by different SAMTools versions (0
 d) The spreadsheet result file contains full protein sequences for both ref and alt alleles, which makes it easier for downstream protein structure/function analysis tools to take
 
 
-Instructions: Please dump all files in the same directory on Unix or Mac machines. The user can simply type
-./run_SNPAAMapper.sh config.txt
-or run the following steps in a sequential order (Note: the first two steps were compiled for human hg19 genome and output files were generated already):
+Instructions: Please dump all files in the same directory on Unix or Mac machines. The user can simply
+run the following steps in a sequential order (Note: the first two steps were compiled for human hg19 genome and output files were generated already):
 
 # Generate exon annotation file
 1) perl Algorithm_generating_annotation_exon.pl ChrAll_knownGene.txt
