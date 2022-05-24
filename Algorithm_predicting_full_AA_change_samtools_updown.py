@@ -196,6 +196,7 @@ with open(output_file, 'w', newline='') as file:
 
     # read SNP file
     reader=csv.reader(open(snp_file), delimiter = '\t')
+    # in case there is a header line in the snp_file (e.g. 007_crop.vcf.append)
     if "CHROM" in list(reader)[0][0]: next(reader)
     for line in list(reader):
         snp_flag = True # initially assume line is an SNP

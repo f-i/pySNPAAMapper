@@ -25,12 +25,12 @@ def link(filename, who, a):
     'upstream' and 'downstream'; a is a Pandas DataFrame read from filename'''
     start = who + 'Start'
     end = who + 'End'
-    b = a[((a[start].notnull())|(a[end].notnull()))&(~a.chrom.str.contains('_'))]
+    b = a[((a[start].notnull())|(a[end].notnull()))&(~a.chrom.str.contains('_'))].copy()
     b.loc[:,start] = b[start].astype(int)
     b.loc[:,end] = b[end].astype(int)
     new_col = 'chrom_' + who + 'Start'
     b.loc[:,new_col] = b.chrom + '_'+b[start].astype(str)
-    c = b[[new_col,end,'name']]
+    c = b[[new_col,end,'name']].copy()
     print('Saving to file '+filename+'.'+who+'_link')
     c.to_csv(filename+'.'+who+'_link',
              index=False,sep='\t',header=False)

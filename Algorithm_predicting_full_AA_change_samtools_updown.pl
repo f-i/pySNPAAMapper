@@ -55,7 +55,7 @@ sub func0 {
     @alle_freq = split("=", $info_array[$i2]);
     @read_category = split("=", $info_array[$i3]);
   }
-  else #for old samtools version 0.1.12
+  else  #for old samtools version 0.1.12
   {
     @alle_freq = split("=", $info_array[$i4]);
     @read_category = split("=", $info_array[$i5]);
