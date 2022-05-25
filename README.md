@@ -28,8 +28,11 @@ d) The spreadsheet result file contains full protein sequences for both ref and 
 
 ## Instructions:
 
-Please dump all files in the same directory on Unix or Mac machines. The user can simply
-run the following steps in a sequential order (Note: the first two steps were compiled for human hg19 genome and output files were generated already):
+Please dump all files in the same directory on Unix or Mac machines. The user can simply type
+```
+./run_SNPAAMapper.sh config.txt
+```
+as a commandline, or run the following steps in a sequential order (Note: the first two steps were compiled for human hg19 genome and output files were generated already):
 
 ### 1) Generate exon annotation file
 ```
