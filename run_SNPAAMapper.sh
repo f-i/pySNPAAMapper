@@ -11,7 +11,7 @@ echo "It took $DIFF1 seconds to generate exon annotation file!"
 
 # Process exon annotation files and generate feature start and gene mapping files
 START2=$(date +%s)
-python Algorithm_preprocessing_exon_annotation_RR.py "$geneAnnotation".exon
+python Algorithm_preprocessing_exon_annotation_RR.py "$geneAnnotation".exons
 END2=$(date +%s)
 DIFF2=$(( $END2 - $START2))
 echo "It took $DIFF2 seconds to generate feature start and gene mapping files!"

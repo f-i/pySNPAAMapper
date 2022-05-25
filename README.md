@@ -10,11 +10,11 @@ https://github.com/f-i/pySNPAAMapper/commit/a7dd5803d9165380fa3cf68c3997083056ed
 
 
 
-########################################
+---
 - Authors: Bai, Y & J. Cavalcoli
 - SNPAAMapper Version 2.0 (Copyright 2013)
 - Python Translator: Chenjian Fu
-########################################
+---
 
 ## Program descriptions:
 SNPAAMapper is a downstream variant annotation program that can effectively classify variants by region (e.g. exon, intron, etc), predict amino acid change type (e.g. synonymous, non-synonymous mutation, etc), and prioritize mutation effects (e.g. CDS versus 5’UTR, etc).

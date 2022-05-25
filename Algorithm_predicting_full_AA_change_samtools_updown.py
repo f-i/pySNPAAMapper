@@ -195,10 +195,13 @@ with open(output_file, 'w', newline='') as file:
     writer.writerow(['Sample', 'Chromosome', 'Variant Position', 'Gene Symbol', 'UCSC ID', 'Strand', 'AA Position of Mutation (for CDSHIT)', 'Variant Type', 'Amino Acid Ref (Codon) -> AA SNP (Codon)', 'Variant Class', 'Ref AA chain',  'Alt AA chain',  'Hit Type', 'Known dbSNP', 'Ref nt', 'Alt nt', 'Quality', 'Depth', 'Allele Freq', 'Read Categories', 'Info'])
 
     # read SNP file
-    reader=csv.reader(open(snp_file), delimiter = '\t')
+    reader=list(csv.reader(open(snp_file), delimiter = '\t'))
     # in case there is a header line in the snp_file (e.g. 007_crop.vcf.append)
-    if "CHROM" in list(reader)[0][0]: next(reader)
-    for line in list(reader):
+    if "CHROM" in list(reader)[0][0]:
+        reader1=reader[1:]
+    else:
+        reader1=reader
+    for line in reader1:
         snp_flag = True # initially assume line is an SNP
         protein_flag = False
 
