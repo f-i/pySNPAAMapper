@@ -46,6 +46,7 @@ def link(filename, who, a):
     e[end].to_csv(filename+'.'+who+'_link_shrink',
                   index=True,sep='\t',header=False)
     print('Saving to file '+filename+'.'+who+'_gene')
+    # TO-DO: the following line seems not working right
     e['name'].to_csv(filename+'.'+who+'_gene',
                      index=True,sep='\t',header=False)
 
