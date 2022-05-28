@@ -8,6 +8,7 @@
 
 https://github.com/f-i/pySNPAAMapper/commit/a7dd5803d9165380fa3cf68c3997083056ed12f6 (Commit on Aug 19, 2020)
 
+https://github.com/f-i/pySNPAAMapper/commit/1fda3b1b856efddfedf1c5fa91e0d61f24904c11 (Commit on May 28, 2022)
 
 
 ---
