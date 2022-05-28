@@ -1,12 +1,13 @@
-''' algorithm for predicting amino acid changes
+#!/usr/bin/env python
+'''
+Algorithm for predicting amino acid changes
 
-python3 Algorithm_predicting_full_AA_change_samtools_updown.py VCF_input_file_in_tab_delimited_format.vcf.append kgXref.txt hg19_CDSIntronWithSign.txt.out ChrAll_knownGene.txt >VCF_input_file_in_tab_delimited_format.vcf.out.txt
+USAGE:
+    python Algorithm_predicting_full_AA_change_samtools_updown.py VCF_input_file_in_tab_delimited_format.vcf.append kgXref.txt hg19_CDSIntronWithSign.txt.out ChrAll_knownGene.txt > VCF_input_file_in_tab_delimited_format.vcf.out.txt
 '''
 
-import sys
+import sys, csv, re
 from sys import argv
-import csv
-import re
 
 snp_file = argv[1]
 conversion_file = argv[2]
@@ -15,82 +16,27 @@ cds_intron_file = argv[4]
 output_file = snp_file + '.out.txt'
 
 # increase field limit
-limit = sys.maxsize
+LIMIT = sys.maxsize
 while True:
     # decrease limit by factor 10 as long as OverflowError occurs
     try:
-        csv.field_size_limit(limit)
+        csv.field_size_limit(LIMIT)
         break
     except OverflowError:
-        limit = int(limit/10)
+        LIMIT = int(LIMIT/10)
 
 # codon -> AA conversion
-aa_dict = {
-    'ATG':'M',
-    'TGG':'W',
-    'TTT':'F',
-    'TTC':'F',
-    'TAT':'Y',
-    'TAC':'Y',
-    'TGT':'C',
-    'TGC':'C',
-    'CAT':'H',
-    'CAC':'H',
-    'CAA':'Q',
-    'CAG':'Q',
-    'AAT':'N',
-    'AAC':'N',
-    'AAA':'K',
-    'AAG':'K',
-    'GAT':'D',
-    'GAC':'D',
-    'GAA':'E',
-    'GAG':'E',
-    'ATT':'I',
-    'ATC':'I',
-    'ATA':'I',
-    'CCT':'P',
-    'CCC':'P',
-    'CCA':'P',
-    'CCG':'P',
-    'ACT':'T',
-    'ACC':'T',
-    'ACA':'T',
-    'ACG':'T',
-    'GTT':'V',
-    'GTC':'V',
-    'GTA':'V',
-    'GTG':'V',
-    'GCT':'A',
-    'GCC':'A',
-    'GCA':'A',
-    'GCG':'A',
-    'GGT':'G',
-    'GGC':'G',
-    'GGA':'G',
-    'GGG':'G',
-    'TCT':'S',
-    'TCC':'S',
-    'TCA':'S',
-    'TCG':'S',
-    'AGT':'S',
-    'AGC':'S',
-    'TTA':'L',
-    'TTG':'L',
-    'CTT':'L',
-    'CTC':'L',
-    'CTA':'L',
-    'CTG':'L',
-    'CGT':'R',
-    'CGC':'R',
-    'CGA':'R',
-    'CGG':'R',
-    'AGA':'R',
-    'AGG':'R',
-    'TAG':'*',
-    'TAA':'*',
-    'TGA':'*',
-}
+aa_dict = {'ATG':'M', 'TGG':'W', 'TTT':'F', 'TTC':'F', 'TAT':'Y', 'TAC':'Y',
+           'TGT':'C', 'TGC':'C', 'CAT':'H', 'CAC':'H', 'CAA':'Q', 'CAG':'Q',
+           'AAT':'N', 'AAC':'N', 'AAA':'K', 'AAG':'K', 'GAT':'D', 'GAC':'D',
+           'GAA':'E', 'GAG':'E', 'ATT':'I', 'ATC':'I', 'ATA':'I', 'CCT':'P',
+           'CCC':'P', 'CCA':'P', 'CCG':'P', 'ACT':'T', 'ACC':'T', 'ACA':'T',
+           'ACG':'T', 'GTT':'V', 'GTC':'V', 'GTA':'V', 'GTG':'V', 'GCT':'A',
+           'GCC':'A', 'GCA':'A', 'GCG':'A', 'GGT':'G', 'GGC':'G', 'GGA':'G',
+           'GGG':'G', 'TCT':'S', 'TCC':'S', 'TCA':'S', 'TCG':'S', 'AGT':'S',
+           'AGC':'S', 'TTA':'L', 'TTG':'L', 'CTT':'L', 'CTC':'L', 'CTA':'L',
+           'CTG':'L', 'CGT':'R', 'CGC':'R', 'CGA':'R', 'CGG':'R', 'AGA':'R',
+           'AGG':'R', 'TAG':'*', 'TAA':'*', 'TGA':'*',}
 
 # UCSC_ID -> gene symbol
 gene_dict = {}
@@ -99,12 +45,31 @@ strand_dict = {}
 # UCSC_ID -> start, end, strand, cds line
 cds_dict = {}
 
-for line in list(csv.reader(open(conversion_file), delimiter = '\t')):
-    gene_dict[line[0]] = line[4]
-for line in list(csv.reader(open(cds_intron_file), delimiter = '\t')):
-    strand_dict[line[0]] = line[2]
+with open(conversion_file, encoding='utf-8') as conversions:
+    for line in list(csv.reader(conversions, delimiter = '\t')):
+        gene_dict[line[0]] = line[4]
+with open(cds_intron_file, encoding='utf-8') as cds_introns:
+    for line in list(csv.reader(cds_introns, delimiter = '\t')):
+        strand_dict[line[0]] = line[2]
 
-gene_out_list = list(csv.reader(open(gene_outfile), delimiter = ' '))
+with open(gene_outfile, encoding='utf-8') as genes:
+    # HANDLE ONLY single-line-fashion sequences in hg19_CDSIntronWithSign.txt.out ------------------#
+    # IF single-line-fashion, the following line is faster than the method that handles both fashions
+    #gene_out_list = list(csv.reader(genes, delimiter = ' '))
+    # HANDLE BOTH single- and multiple-line-fashion sequences in hg19_CDSIntronWithSign.txt.out ----#
+    sequences = genes.read()
+    sequences = re.split("^>", sequences, flags=re.MULTILINE)
+    del sequences[0]
+gene_out_list=[]
+for fasta in sequences:
+    try:
+        header, sequence = fasta.split("\n", 1)
+    except ValueError: print(fasta)
+    header = ">" + header
+    sequence = sequence.replace("\n","")
+    gene_out_list.append(header.split())
+    if sequence: gene_out_list.append(sequence.split())
+    #-----------------------------------------------------------------------------------------------#
 
 for i in range(0, len(gene_out_list), 2):
     if len(gene_out_list[i]) == 6:
@@ -168,7 +133,7 @@ def protein_translation(original_cds_line, cds_line, snp_loc, protein_flag, stra
                     codon_change_string = codon_change_string + 'NSN'
                 else:
                     codon_change_string = codon_change_string + 'NSM'
-                if(cases_left > 1): # more ALT cases left
+                if cases_left > 1: # more ALT cases left
                     codon_change_string = codon_change_string  + ','
 
     print(truncate_original_cds_line)
@@ -190,19 +155,25 @@ def rev_dna_comp(dna):
     '''function for '''
     return dna[::-1].translate(dna.maketrans('ACGTacgt', 'TGCAtgca'))
 
-with open(output_file, 'w', newline='') as file:
+with open(output_file, 'w', newline='', encoding='utf-8') as file:
     writer = csv.writer(file, delimiter='\t')
-    writer.writerow(['Sample', 'Chromosome', 'Variant Position', 'Gene Symbol', 'UCSC ID', 'Strand', 'AA Position of Mutation (for CDSHIT)', 'Variant Type', 'Amino Acid Ref (Codon) -> AA SNP (Codon)', 'Variant Class', 'Ref AA chain',  'Alt AA chain',  'Hit Type', 'Known dbSNP', 'Ref nt', 'Alt nt', 'Quality', 'Depth', 'Allele Freq', 'Read Categories', 'Info'])
+    writer.writerow(['Sample', 'Chromosome', 'Variant Position', 'Gene Symbol',
+                     'UCSC ID', 'Strand', 'AA Position of Mutation (for CDSHIT)',
+                     'Variant Type', 'Amino Acid Ref (Codon) -> AA SNP (Codon)',
+                     'Variant Class', 'Ref AA chain', 'Alt AA chain', 'Hit Type',
+                     'Known dbSNP', 'Ref nt', 'Alt nt', 'Quality', 'Depth',
+                     'Allele Freq', 'Read Categories', 'Info'])
 
     # read SNP file
-    reader=list(csv.reader(open(snp_file), delimiter = '\t'))
+    with open(snp_file, encoding='utf-8') as snps:
+        reader=list(csv.reader(snps, delimiter = '\t'))
     # in case there is a header line in the snp_file (e.g. 007_crop.vcf.append)
     if "CHROM" in list(reader)[0][0]:
         reader1=reader[1:]
     else:
         reader1=reader
     for line in reader1:
-        snp_flag = True # initially assume line is an SNP
+        SNP_FLAG = True # initially assume line is an SNP
         protein_flag = False
 
         snp_chromosome = line[0]
@@ -214,7 +185,7 @@ with open(output_file, 'w', newline='') as file:
         case_count = len(snp_chars)
         for s in snp_chars:
             if len(s) > 1: # not a single SNP
-                snp_flag = False
+                SNP_FLAG = False
                 break
 
         # get depth and read category info
@@ -240,14 +211,14 @@ with open(output_file, 'w', newline='') as file:
                 ucsc_id = line[11]
                 print('One sample & old samtools...')
         else:
-#             hit_type = line[10]
-#             ucsc_id = line[11]
-#             print("One sample & old samtools...")
+            #hit_type = line[10]
+            #ucsc_id = line[11]
+            #print("One sample & old samtools...")
             print('One sample & new samtools...')
             hit_type = line[8]
             ucsc_id = line[9]
 
-        ucsc_id_flag = False
+        UCSC_ID_FLAG = False
 
         strand = None
         codon_change_string = ''
@@ -257,7 +228,7 @@ with open(output_file, 'w', newline='') as file:
             print(*line, gene_dict[ucsc_id], sep='\t')
             print('The number of possible ALT cases for this line is ' + str(case_count))
 
-            if len(ref_char) == 1 and snp_flag: # both ref and SNP calls are single SNPs
+            if len(ref_char) == 1 and SNP_FLAG: # both ref and SNP calls are single SNPs
                 protein_flag = True
             output = [snp_file.split('.')[0], line[0][3:], line[1], gene_dict[ucsc_id], ucsc_id]
 
@@ -267,7 +238,7 @@ with open(output_file, 'w', newline='') as file:
                     print('\n--------------------------------------')
                 cds_start = None
                 cds_end = None
-                line_flag = False
+                LINE_FLAG = False
 
                 if ucsc_id in cds_dict:
                     if snp_chromosome in cds_dict[ucsc_id]:
@@ -278,11 +249,11 @@ with open(output_file, 'w', newline='') as file:
                         cds_end = cds_dict[ucsc_id][snp_chromosome][1]
                         strand = cds_dict[ucsc_id][snp_chromosome][2]
                         line2 = cds_dict[ucsc_id][snp_chromosome][3]
-                        line_flag = True
-                        ucsc_id_flag = True
+                        LINE_FLAG = True
+                        UCSC_ID_FLAG = True
 
                 # found CDS line
-                if line_flag:
+                if LINE_FLAG:
                     cds_line = line2
                     line2_no_intron = remove_intron(line2)
                     before_snp_string = None
@@ -312,10 +283,10 @@ with open(output_file, 'w', newline='') as file:
                             protein_translation(line2_no_intron, cds_line_no_intron, coordinate - len(ref_char) + 1 - len(re.findall(r'[a-z]', before_snp_string)), protein_flag, strand, case_count, case_count - case, output)
                         else:
                             codon_change_string = codon_change_string + protein_translation(line2_no_intron, cds_line_no_intron, coordinate - len(ref_char) + 1 - len(re.findall(r'[a-z]', before_snp_string)), protein_flag, strand, case_count, case_count - case, output)
-                    line_flag = False
+                    LINE_FLAG = False
                     break
 
-        if len(ref_char) == 1 and snp_flag: # single SNP case
+        if len(ref_char) == 1 and SNP_FLAG: # single SNP case
             depth_array = info_array[0].split('=')
             if 'VDB' in line[7]: # samtools v0.1.18
                 alle_freq = info_array[2].split('=')
@@ -336,12 +307,12 @@ with open(output_file, 'w', newline='') as file:
                 alle_freq = info_array[2].split('=')
                 read_category = info_array[4].split('=')
             output.extend([strand, '---', 'INDEL', '---', '---', '---', '---', hit_type, line[2], line[3], line[4], line[5], depth_array[1], alle_freq[1], read_category[1], line[7]])
-        if not ucsc_id_flag:
+        if not UCSC_ID_FLAG:
             print(ucsc_id + ' cannot be found!!')
     else: # INTRON, UTR, or UP-DOWNSTREAM
         output.extend([snp_file.split('.')[0], line[0][3:], line[1], gene_dict.get(ucsc_id, 'Missing'), ucsc_id])
 
-        if len(ref_char) == 1 and snp_flag: # both ref and SNP calls are single SNPs
+        if len(ref_char) == 1 and SNP_FLAG: # both ref and SNP calls are single SNPs
             depth_array = info_array[0].split('=')
             if 'VDB' in line[7]: # samtools v0.1.18
                 alle_freq = info_array[2].split('=')
