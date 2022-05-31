@@ -10,7 +10,7 @@ USAGE:
 import sys, os
 import pandas as pd, numpy as np
 
-def argsCheck(numArgs):
+def args_check(numArgs):
     '''Checks if in proper number of arguments are passed; gives instructions on
     proper use'''
     if len(sys.argv) < numArgs or len(sys.argv) > numArgs:
@@ -18,12 +18,12 @@ def argsCheck(numArgs):
         exit(1)  # Aborts program. (exit(1) indicates that an error occurred)
 
 # Uses the function defined above to check if the number of arguments is correct
-argsCheck(2)
+args_check(2)
 
 #number of bases on exon boundary
-exonboundary_offset=1
-up_flank=2000
-down_flank=500
+EXONBOUNDARY_OFFSET=1
+UP_FLANK=2000
+DOWN_FLANK=500
 
 inFile = sys.argv[1]  # Stores file one for input checking; note that sys.argv[0] is this script file name
 inFilet=os.path.splitext(inFile)[1]
@@ -49,8 +49,8 @@ c=b.reset_index()
 c.loc[c.strand == '-','ExonNumber'] = c.exonCount + c['ExonNumber-']
 c.drop(columns=['proteinID', 'alignID', 'ExonNumber-'],inplace=True)
 c=c.astype({'exStart': 'int32','exEnd': 'int32'})
-c['intronStart']=c['exEnd'].shift(1) + exonboundary_offset
-c['intronEnd']=c['exStart'] - exonboundary_offset
+c['intronStart']=c['exEnd'].shift(1) + EXONBOUNDARY_OFFSET
+c['intronEnd']=c['exStart'] - EXONBOUNDARY_OFFSET
 c.loc[c.txStart == c.exStart,["intronStart","intronEnd"]] = np.nan
 
 c['utr5Start']=np.nan
@@ -93,7 +93,7 @@ c.loc[(c.strand=='+')&(c.exStart<=c.cdsStart)&(c.exEnd>=c.cdsStart)&(c.exEnd>=c.
 
 c['upstreamStart']=np.nan
 c.loc[(c.strand=='+')&(c.exStart<=c.cdsStart)&(c.exStart==c.txStart),
-      'upstreamStart']=c.txStart - up_flank
+      'upstreamStart']=c.txStart - UP_FLANK
 c.loc[(c.strand=='-')&(c.exStart>c.cdsStart)&(c.exEnd>c.cdsEnd)&(c.exEnd==c.txEnd),
       'upstreamStart']=c.txEnd + 1
 c.loc[(c.strand=='-')&(c.exStart<=c.cdsStart)&(c.exEnd>=c.cdsStart)&(c.exEnd>=c.cdsEnd)&(c.exEnd==c.txEnd),
@@ -103,13 +103,13 @@ c['upstreamEnd']=np.nan
 c.loc[(c.strand=='+')&(c.exStart<=c.cdsStart)&(c.exStart==c.txStart),
       'upstreamEnd']=c.txStart - 1
 c.loc[(c.strand=='-')&(c.exStart>c.cdsStart)&(c.exEnd>c.cdsEnd)&(c.exEnd==c.txEnd),
-      'upstreamEnd']=c.txEnd + up_flank
+      'upstreamEnd']=c.txEnd + UP_FLANK
 c.loc[(c.strand=='-')&(c.exStart<=c.cdsStart)&(c.exEnd>=c.cdsStart)&(c.exEnd>=c.cdsEnd)&(c.exEnd==c.txEnd),
-      'upstreamEnd']=c.txEnd + up_flank
+      'upstreamEnd']=c.txEnd + UP_FLANK
 
 c['downstreamStart']=np.nan
 c.loc[(c.strand=='-')&(c.exStart<=c.cdsStart)&(c.exStart==c.txStart),
-      'downstreamStart']=c.txStart - down_flank
+      'downstreamStart']=c.txStart - DOWN_FLANK
 c.loc[(c.strand=='+')&(c.exStart>c.cdsStart)&(c.exEnd>c.cdsEnd)&(c.exEnd==c.txEnd),
       'downstreamStart']=c.txEnd + 1
 c.loc[(c.strand=='+')&(c.exStart<=c.cdsStart)&(c.exEnd>=c.cdsStart)&(c.exEnd>=c.cdsEnd)&(c.exEnd==c.txEnd),
@@ -119,9 +119,9 @@ c['downstreamEnd']=np.nan
 c.loc[(c.strand=='-')&(c.exStart<=c.cdsStart)&(c.exStart==c.txStart),
       'downstreamEnd']=c.txStart - 1
 c.loc[(c.strand=='+')&(c.exStart>c.cdsStart)&(c.exEnd>c.cdsEnd)&(c.exEnd==c.txEnd),
-      'downstreamEnd']=c.txEnd + down_flank
+      'downstreamEnd']=c.txEnd + DOWN_FLANK
 c.loc[(c.strand=='+')&(c.exStart<=c.cdsStart)&(c.exEnd>=c.cdsStart)&(c.exEnd>=c.cdsEnd)&(c.exEnd==c.txEnd),
-      'downstreamEnd']=c.txEnd + down_flank
+      'downstreamEnd']=c.txEnd + DOWN_FLANK
 
 c['cdsStart_']=np.nan
 c.loc[(c.exStart>c.cdsStart)&(c.exEnd>c.cdsEnd)&(c.exStart<=c.cdsEnd),
