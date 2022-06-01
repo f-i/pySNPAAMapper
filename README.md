@@ -10,6 +10,7 @@ https://github.com/f-i/pySNPAAMapper/commit/a7dd5803d9165380fa3cf68c3997083056ed
 
 https://github.com/f-i/pySNPAAMapper/commit/1fda3b1b856efddfedf1c5fa91e0d61f24904c11 (Commit on May 28, 2022)
 
+https://github.com/f-i/pySNPAAMapper/commit/5f76ca4ae3de9b428e78c609557d6174b07496f8 (Commit on Jun 1, 2022)
 
 ---
 - Authors: Bai, Y & J. Cavalcoli
@@ -18,13 +19,13 @@ https://github.com/f-i/pySNPAAMapper/commit/1fda3b1b856efddfedf1c5fa91e0d61f2490
 ---
 
 ## Program descriptions:
-SNPAAMapper is a downstream variant annotation program that can effectively classify variants by region (e.g. exon, intron, etc), predict amino acid change type (e.g. synonymous, non-synonymous mutation, etc), and prioritize mutation effects (e.g. CDS versus 5’UTR, etc).
+SNPAAMapper is a downstream variant annotation program that can effectively classify variants by region (e.g. exon, intron, etc), predict amino acid change type (e.g. synonymous, non-synonymous mutation, etc), and prioritize mutation effects (e.g. CDS versus 5’UTR, etc). pySNPAAMapper is a Python version of SNPAAMapper.
 
 ## Major features:
-a) The pipeline accepts the VCF input file in tab-delimited format and processes the vcf input file containing all cases (G5, lowFreq, and novel)
-b) The variant mapping step has the option of letting users select whether they want to report the bp distance between each identified intron variant and its nearby exon
-c) The pipeline can deal with VCF files called by different SAMTools versions (0.1.18 and older ones) and also offers flexibility in dealing with vcf input files generated using SAMTools with two or three samples
-d) The spreadsheet result file contains full protein sequences for both ref and alt alleles, which makes it easier for downstream protein structure/function analysis tools to take
+1. The pipeline accepts the VCF input file in tab-delimited format and processes the vcf input file containing all cases (G5, lowFreq, and novel)
+2. The variant mapping step has the option of letting users select whether they want to report the bp distance between each identified intron variant and its nearby exon
+3. The pipeline can deal with VCF files called by different SAMTools versions (0.1.18 and older ones) and also offers flexibility in dealing with vcf input files generated using SAMTools with two or three samples
+4. The spreadsheet result file contains full protein sequences for both ref and alt alleles, which makes it easier for downstream protein structure/function analysis tools to take
 
 
 ## Instructions:
