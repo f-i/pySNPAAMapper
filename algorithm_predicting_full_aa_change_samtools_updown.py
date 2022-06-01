@@ -3,7 +3,7 @@
 Algorithm for predicting amino acid changes
 
 USAGE:
-    python Algorithm_predicting_full_AA_change_samtools_updown.py VCF_input_file_in_tab_delimited_format.vcf.append kgXref.txt hg19_CDSIntronWithSign.txt.out ChrAll_knownGene.txt > VCF_input_file_in_tab_delimited_format.vcf.out.txt
+    python algorithm_predicting_full_aa_change_samtools_updown.py VCF_input_file_in_tab_delimited_format.vcf.append kgXref.txt hg19_CDSIntronWithSign.txt.out ChrAll_knownGene.txt > VCF_input_file_in_tab_delimited_format.vcf.out.txt
 '''
 
 import sys, csv, re

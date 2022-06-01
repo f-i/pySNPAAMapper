@@ -21,7 +21,7 @@ START3=$(date +%s)
 # perl Algorithm_mapping_variants_reporting_class_intronLocation_updown.pl ChrAll_knownGene.txt.exons VCF_input_file_in_tab_delimited_format.txt
 # OR
 # perl Algorithm_mapping_variants_reporting_class_intronLocation_updown.pl ChrAll_knownGene.txt.exons VCF_input_file_in_tab_delimited_format.txt IntronExon_boundary_in_bp
-python algorithm_mapping_variants_reporting_class_intronLocation_updown.py "$geneAnnotation".exons $vcfFile $intronBoundary
+python algorithm_mapping_variants_reporting_class_intronlocation_updown.py "$geneAnnotation".exons $vcfFile $intronBoundary
 END3=$(date +%s)
 DIFF3=$(($END3 - $START3))
 echo "It took $DIFF3 seconds to classify variants by regions!"
