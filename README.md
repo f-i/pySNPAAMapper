@@ -42,7 +42,7 @@ perl Algorithm_generating_annotation_exon.pl ChrAll_knownGene.txt
 ```
 or
 ```
-python Algorithm_generating_annotation_exon.py ChrAll_knownGene.txt
+python algorithm_generating_annotation_exon.py ChrAll_knownGene.txt
 ```
 
 ### 2) Process exon annotation files and generate feature start and gene mapping files
@@ -51,39 +51,60 @@ perl Algorithm_preprocessing_exon_annotation_RR.pl ChrAll_knownGene.txt.exons
 ```
 or
 ```
-python Algorithm_preprocessing_exon_annotation_RR.py ChrAll_knownGene.txt.exons
+python algorithm_preprocessing_exon_annotation_rr.py ChrAll_knownGene.txt.exons
 ```
 
 ### 3) Classify variants by regions (CDS, Upstream, Downstream, Intron, UTRs...)
+This Perl script is extremely slow. The Python script is much faster.
 ```
-perl(/python) Algorithm_mapping_variants_reporting_class_intronLocation_updown.pl(/.py) ChrAll_knownGene.txt.exons VCF_input_file_in_tab_delimited_format.txt
+perl Algorithm_mapping_variants_reporting_class_intronLocation_updown.pl ChrAll_knownGene.txt.exons VCF_input_file_in_tab_delimited_format.txt
 ```
-(e.g. perl(/python) Algorithm_mapping_variants_reporting_class_intronLocation_updown.pl(/.py) ChrAll_knownGene.txt.exons 007_crop.vcf)
-OR
+or
 ```
-perl(/python) Algorithm_mapping_variants_reporting_class_intronLocation_updown.pl(/.py) ChrAll_knownGene.txt.exons VCF_input_file_in_tab_delimited_format.txt IntronExon_boundary_in_bp
+python algorithm_mapping_variants_reporting_class_intronlocation_updown.py ChrAll_knownGene.txt.exons VCF_input_file_in_tab_delimited_format
 ```
-(e.g. perl(/python) Algorithm_mapping_variants_reporting_class_intronLocation_updown.pl(/.py) ChrAll_knownGene.txt.exons 007_crop.vcf 6)
+(e.g. use 007_crop.vcf as the VCF_input_file_in_tab_delimited_format)
+If IntronExon_boundary_in_bp is considered:
+```
+perl Algorithm_mapping_variants_reporting_class_intronLocation_updown.pl ChrAll_knownGene.txt.exons VCF_input_file_in_tab_delimited_format IntronExon_boundary_in_bp
+```
+or
+```
+python algorithm_mapping_variants_reporting_class_intronlocation_updown.py ChrAll_knownGene.txt.exons VCF_input_file_in_tab_delimited_format IntronExon_boundary_in_bp
+```
+(e.g. use 007_crop.vcf and 6 as the VCF_input_file_in_tab_delimited_format and IntronExon_boundary_in_bp)
 
 ### 4) Predict amino acid change type
 ```
-perl(/python) Algorithm_predicting_full_AA_change_samtools_updown.pl(/.py) VCF_input_file_in_tab_delimited_format.txt.append kgXref.txt hg19_CDSIntronWithSign.txt.out ChrAll_knownGene.txt > VCF_input_file_in_tab_delimited_format.txt.out.txt
+perl Algorithm_predicting_full_AA_change_samtools_updown.pl VCF_input_file_in_tab_delimited_format.txt.append kgXref.txt hg19_CDSIntronWithSign.txt.out ChrAll_knownGene.txt > VCF_input_file_in_tab_delimited_format.txt.out.txt
 ```
-(e.g. perl(/python) Algorithm_predicting_full_AA_change_samtools_updown.pl(/.py) 007_crop.vcf.append kgXref.txt hg19_CDSIntronWithSign.txt.out ChrAll_knownGene.txt > 007_crop.vcf.out.txt)
-Note: File hg19_CDSIntronWithSign.txt.out is 2797.95 MB; this exceeds GitHub's file size limit of 100.00 MB. So it cannot be uploaded here into this repository. Please download hg19_CDSIntronWithSign.txt.out in "Source Code" from this url link: http://isu.indstate.edu/ybai2/SNPAAMapper2/index.html
+or
+```
+python algorithm_predicting_full_aa_change_samtools_updown.py VCF_input_file_in_tab_delimited_format.txt.append kgXref.txt hg19_CDSIntronWithSign.txt.out ChrAll_knownGene.txt > VCF_input_file_in_tab_delimited_format.txt.out.txt
+```
+(e.g. use 007_crop.vcf.append and 007_crop.vcf.out.txt as the VCF_input_file_in_tab_delimited_format.txt.append and VCF_input_file_in_tab_delimited_format.txt.out.txt)
+
+Note: The hg19_CDSIntronWithSign.txt.out file's size is huge and usually around
+3 GB, which exceeds GitHub's file size limit of 100.00 MB. So it is not in this
+repository. Please download it in "Source Code" from:
+http://isu.indstate.edu/ybai2/SNPAAMapper2/index.html
 
 ### 5) Prioritize mutation effects
 ```
-perl(/python) Algorithm_prioritizing_mutation_headerTop_updown.pl(/.py) VCF_input_file_in_tab_delimited_format.txt.append.out.txt
+perl Algorithm_prioritizing_mutation_headerTop_updown.pl VCF_input_file_in_tab_delimited_format.txt.append.out.txt
 ```
-(e.g. perl(/python) Algorithm_prioritizing_mutation_headerTop_updown.pl(/.py) 007_crop.vcf.append.out.txt)
+or
+```
+python algorithm_prioritizing_mutation_headertop_updown.py VCF_input_file_in_tab_delimited_format.txt.append.out.txt
+```
+(e.g. use 007_crop.vcf.append.out.txt as the VCF_input_file_in_tab_delimited_format.txt.append.out.txt)
 
 
 > The final output file is \*.append.out.txt.prioritized_out.
 
 
 
-Terminology:
+## Terminology
 
 In molecular genetics, an untranslated region (or UTR) refers to either of two
 sections, one on each side of a coding sequence on a strand of mRNA. If it is
