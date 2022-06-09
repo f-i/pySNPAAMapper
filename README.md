@@ -12,6 +12,8 @@ https://github.com/f-i/pySNPAAMapper/commit/1fda3b1b856efddfedf1c5fa91e0d61f2490
 
 https://github.com/f-i/pySNPAAMapper/commit/5f76ca4ae3de9b428e78c609557d6174b07496f8 (Commit on Jun 1, 2022)
 
+https://github.com/f-i/pySNPAAMapper/commit/6abbacd1528c1b468751d3990a329d8fee343be7 (Commit on Jun 9, 2022)
+
 ---
 - Authors: Bai, Y & J. Cavalcoli
 - SNPAAMapper Version 2.0 (Copyright 2013)
