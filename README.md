@@ -57,7 +57,7 @@ python algorithm_preprocessing_exon_annotation_rr.py ChrAll_knownGene.txt.exons
 ### 3) Classify variants by regions (CDS, Upstream, Downstream, Intron, UTRs...)
 This Perl script is extremely slow. The Python script is much faster.
 ```
-perl Algorithm_mapping_variants_reporting_class_intronLocation_updown.pl ChrAll_knownGene.txt.exons VCF_input_file_in_tab_delimited_format.txt
+perl Algorithm_mapping_variants_reporting_class_intronLocation_updown.pl ChrAll_knownGene.txt.exons VCF_input_file_in_tab_delimited_format
 ```
 or
 ```
@@ -76,13 +76,13 @@ python algorithm_mapping_variants_reporting_class_intronlocation_updown.py ChrAl
 
 ### 4) Predict amino acid change type
 ```
-perl Algorithm_predicting_full_AA_change_samtools_updown.pl VCF_input_file_in_tab_delimited_format.txt.append kgXref.txt hg19_CDSIntronWithSign.txt.out ChrAll_knownGene.txt > VCF_input_file_in_tab_delimited_format.txt.out.txt
+perl Algorithm_predicting_full_AA_change_samtools_updown.pl VCF_input_file_in_tab_delimited_format.append kgXref.txt hg19_CDSIntronWithSign.txt.out ChrAll_knownGene.txt > VCF_input_file_in_tab_delimited_format.out.txt
 ```
 or
 ```
-python algorithm_predicting_full_aa_change_samtools_updown.py VCF_input_file_in_tab_delimited_format.txt.append kgXref.txt hg19_CDSIntronWithSign.txt.out ChrAll_knownGene.txt > VCF_input_file_in_tab_delimited_format.txt.out.txt
+python algorithm_predicting_full_aa_change_samtools_updown.py VCF_input_file_in_tab_delimited_format.append kgXref.txt hg19_CDSIntronWithSign.txt.out ChrAll_knownGene.txt > VCF_input_file_in_tab_delimited_format.out.txt
 ```
-(e.g. use 007_crop.vcf.append and 007_crop.vcf.out.txt as the VCF_input_file_in_tab_delimited_format.txt.append and VCF_input_file_in_tab_delimited_format.txt.out.txt)
+(e.g. use 007_crop.vcf.append and 007_crop.vcf.out.txt as the VCF_input_file_in_tab_delimited_format.append and VCF_input_file_in_tab_delimited_format.out.txt)
 
 Note: The hg19_CDSIntronWithSign.txt.out file's size is huge and usually around
 3 GB, which exceeds GitHub's file size limit of 100.00 MB. So it is not in this
@@ -91,13 +91,13 @@ http://isu.indstate.edu/ybai2/SNPAAMapper2/index.html
 
 ### 5) Prioritize mutation effects
 ```
-perl Algorithm_prioritizing_mutation_headerTop_updown.pl VCF_input_file_in_tab_delimited_format.txt.append.out.txt
+perl Algorithm_prioritizing_mutation_headerTop_updown.pl VCF_input_file_in_tab_delimited_format.append.out.txt
 ```
 or
 ```
-python algorithm_prioritizing_mutation_headertop_updown.py VCF_input_file_in_tab_delimited_format.txt.append.out.txt
+python algorithm_prioritizing_mutation_headertop_updown.py VCF_input_file_in_tab_delimited_format.append.out.txt
 ```
-(e.g. use 007_crop.vcf.append.out.txt as the VCF_input_file_in_tab_delimited_format.txt.append.out.txt)
+(e.g. use 007_crop.vcf.append.out.txt as the VCF_input_file_in_tab_delimited_format.append.out.txt)
 
 
 > The final output file is \*.append.out.txt.prioritized_out.

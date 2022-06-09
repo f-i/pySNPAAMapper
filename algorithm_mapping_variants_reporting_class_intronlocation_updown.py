@@ -9,6 +9,7 @@ USAGE:
 
 import sys, csv
 from sys import argv
+csv.field_size_limit(sys.maxsize)
 
 EXON_FILE = None
 SNP_FILE = None
