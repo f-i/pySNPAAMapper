@@ -9,7 +9,6 @@ USAGE:
 
 import sys, csv
 from sys import argv
-csv.field_size_limit(sys.maxsize)
 
 EXON_FILE = None
 SNP_FILE = None
@@ -107,7 +106,7 @@ with open(output_file, 'w', newline='', encoding='utf-8') as file:
             for typ in feature_types:
                 starts = typ.starts[SNP_CHR]
                 mid = binary_search(starts, snp_start-1)
-                output = line.copy()
+                output = [SNP_CHR,*line[1:].copy()]
 
                 if typ.name == 'INTRON' and INTRON_OPTION:
                     if starts[mid] <= snp_start < starts[mid] + EXON_BUFFER or typ.chrom[SNP_CHR + '_' + str(starts[mid])] + 1 - EXON_BUFFER < snp_start <= typ.chrom[SNP_CHR + '_' + str(starts[mid])] + 1:

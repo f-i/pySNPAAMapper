@@ -108,26 +108,29 @@ def protein_translation(original_cds_line, cds_lin, snp_lo, protein_flg, strad, 
     for j in range(0, len(cds_lin), 3):
         codon = cds_lin[j:j+3]
         truncate_cds_line = truncate_cds_line + codon
-        truncate_aa_line = truncate_aa_line + aa_dict[codon]
+        try: truncate_aa_line = truncate_aa_line + aa_dict[codon]
+        except KeyError: print("Encountered KeyError"+codon)
 
         if snp_lo - j >= 0 and snp_lo - j <= 2 and protein_flg:
-            #snp_codon_mutant = codon
-            snp_aa_mutant = aa_dict[codon]
+            try:
+                #snp_codon_mutant = codon
+                snp_aa_mutant = aa_dict[codon]
 
-            out[-1] = out[-1] + '->' + snp_aa_mutant + '(' + codon + ')'
-            if case_ct == 1:
-                if checked_codon == snp_aa_mutant: out.append('SYN')
-                elif snp_aa_mutant == '*': out.append('NSN')
-                else: out.append('NSM')
-            else:
-                out[-1] = out[-1] + ','
-                if checked_codon == snp_aa_mutant:
-                    codon_change_str = codon_change_str + 'SYN'
-                elif snp_aa_mutant == '*':
-                    codon_change_str = codon_change_str + 'NSN'
-                else: codon_change_str = codon_change_str + 'NSM'
-                if cases_left > 1:  # more ALT cases left
-                    codon_change_str = codon_change_str  + ','
+                out[-1] = out[-1] + '->' + snp_aa_mutant + '(' + codon + ')'
+                if case_ct == 1:
+                    if checked_codon == snp_aa_mutant: out.append('SYN')
+                    elif snp_aa_mutant == '*': out.append('NSN')
+                    else: out.append('NSM')
+                else:
+                    out[-1] = out[-1] + ','
+                    if checked_codon == snp_aa_mutant:
+                        codon_change_str = codon_change_str + 'SYN'
+                    elif snp_aa_mutant == '*':
+                        codon_change_str = codon_change_str + 'NSN'
+                    else: codon_change_str = codon_change_str + 'NSM'
+                    if cases_left > 1:  # more ALT cases left
+                        codon_change_str = codon_change_str  + ','
+            except KeyError: print("Encountered KeyError"+codon)
 
     print(truncate_original_cds_line)
     print(truncate_cds_line)
@@ -201,10 +204,7 @@ with open(output_file, 'w', newline='', encoding='utf-8') as file:
                 HIT_TYPE = line[10]
                 UCSC_ID = line[11]
                 print('One sample & old samtools...')
-        else:
-            #HIT_TYPE = line[10]
-            #UCSC_ID = line[11]
-            #print("One sample & old samtools...")
+        else: # e.g. clinvar data
             print('One sample & new samtools...')
             HIT_TYPE = line[8]
             UCSC_ID = line[9]
